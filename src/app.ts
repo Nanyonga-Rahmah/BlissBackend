@@ -1,4 +1,6 @@
-// require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
+
 
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
@@ -10,6 +12,7 @@ import { routes } from "./routes/index.js";
 
 const app: Application = express();
 const storage = new PostgresStorageRepo();
+
 
 // Init database
 storage.init().then(() => {

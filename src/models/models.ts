@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
-import type { IBooking, IUser } from "../interfaces/interfaces.js";
+import type { IBooking, ILink, IUser } from "../interfaces/interfaces.js";
 
 @Entity()
 export class User implements IUser {
@@ -48,7 +48,6 @@ export class User implements IUser {
   }
 }
 @Entity()
-
 export class Booking implements IBooking {
   @PrimaryGeneratedColumn()
   id: number;
@@ -87,5 +86,34 @@ export class Booking implements IBooking {
       (this.bookingFee = bookingFee),
       (this.isCanceled = isCanceled),
       (this.status = status);
+  }
+}
+
+@Entity()
+export class Link implements ILink {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column("text")
+  user_email: string;
+
+  @Column( { nullable: true })
+  isClicked: boolean;
+
+  @Column("timestamp", { nullable: true })
+  expires_at?: Date | undefined;
+
+  constructor(
+    id: number,
+    user_email: string,
+
+    isClicked: boolean,
+    expires_at: Date
+  ) {
+    this.id = id;
+    this.user_email = user_email;
+
+    this.expires_at = expires_at;
+    this.isClicked = isClicked;
   }
 }

@@ -30,6 +30,25 @@ export default function authRoutes(repo: PostgresStorageRepo) {
   });
 
   // --- LOGIN ---
+  router.post("/verify", async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email  is required" });
+      }
+
+      const token = await userController.onClickVerify(email);
+
+      res.status(200).json({
+        message: "successful",
+      });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // --- LOGIN ---
   router.post("/login", async (req, res) => {
     try {
       const { email, password } = req.body;
