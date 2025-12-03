@@ -5,13 +5,13 @@ import {
   IStorageRepo,
   IUser,
   TAuthenticationResponse,
-} from "../interfaces/interfaces.js";
+} from "../interfaces/interfaces";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import databaseConfig from "../config/databaseConfig.js";
+import databaseConfig from "../config/databaseConfig";
 import { render } from "@react-email/render";
 import React from "react";
-import VerifyEmail from "../views/user_verification.js";
+import VerifyEmail from "../views/user_verification";
 
 import { Resend } from "resend";
 import { error } from "console";

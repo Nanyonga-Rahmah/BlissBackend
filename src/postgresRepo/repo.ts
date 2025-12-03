@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm";
-import { Booking, Link, User } from "../models/models.js";
-import databaseConfig from "../config/databaseConfig.js";
-import { ILink, IStorageRepo, IUser } from "../interfaces/interfaces.js";
+import { Booking, Link, User } from "../models/models";
+import databaseConfig from "../config/databaseConfig";
+import { ILink, IStorageRepo, IUser } from "../interfaces/interfaces";
 import { error } from "console";
 
 const db = databaseConfig.databaseConfig;

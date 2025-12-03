@@ -7,8 +7,8 @@ import express, { Application, Request, Response } from "express";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 
-import { PostgresStorageRepo } from "./postgresRepo/repo.js";
-import { routes } from "./routes/index.js";
+import { PostgresStorageRepo } from "./postgresRepo/repo";
+import { routes } from "./routes/index";
 
 const app: Application = express();
 const storage = new PostgresStorageRepo();

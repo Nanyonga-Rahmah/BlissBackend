@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { PostgresStorageRepo } from "../postgresRepo/repo.js";
-import authRoutes from "./authroutes.js";
+import { PostgresStorageRepo } from "../postgresRepo/repo";
+import authRoutes from "./authroutes";
 
 
 export const routes = (repo: PostgresStorageRepo) => {

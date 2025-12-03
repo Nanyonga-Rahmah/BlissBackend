@@ -1,9 +1,9 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { PostgresStorageRepo } from "../postgresRepo/repo.js";
-import { UserController } from "../controllers/userController.js";
-import { IUser } from "../interfaces/interfaces.js";
+import { PostgresStorageRepo } from "../postgresRepo/repo";
+import { UserController } from "../controllers/userController";
+import { IUser } from "../interfaces/interfaces";
 
 export default function authRoutes(repo: PostgresStorageRepo) {
   const router = Router();
