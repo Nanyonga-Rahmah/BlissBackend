@@ -48,7 +48,7 @@ export const VerifyEmail = ({ name, email }: Props) => {
             }}
           >
             <Img
-              src="https://imgur.com/a/ehxitst"
+              src="https://imgur.com/a/ehxitst#hGCsbJD"
               alt=" Logo"
               width="120"
               height="40"
