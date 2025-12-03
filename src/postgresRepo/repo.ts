@@ -108,7 +108,7 @@ export class PostgresStorageRepo implements IStorageRepo {
     const link = await linkRepo.findOneBy({ id: id });
 
     if (!link) {
-      throw error("Link doesn't exists");
+      throw error("Link doesn't exist");
     }
 
     Object.assign(link, updates);

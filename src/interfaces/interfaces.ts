@@ -4,7 +4,7 @@ export interface IUser {
   firstName: string;
   password: string;
   email: string;
-  bookingIds?: number[];
+  bookings?: number[];
   isVerified?: boolean;
   createdAt: Date;
 }
@@ -26,6 +26,10 @@ export interface IBooking {
   bookingTime: string;
   isCanceled: boolean;
   status: string;
+  city:string
+  size?:string,
+  length?:string,
+  userId:number
   bookingFee: string;
 }
 
