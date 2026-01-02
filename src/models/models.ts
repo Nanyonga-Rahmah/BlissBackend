@@ -5,8 +5,15 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Timestamp,
 } from "typeorm";
-import type { IBooking, ILink, IUser } from "../interfaces/interfaces.js";
+import type {
+  IAvailableDay,
+  IBooking,
+  ICity,
+  ILink,
+  IUser,
+} from "../interfaces/interfaces.js";
 
 @Entity()
 export class User implements IUser {
@@ -21,6 +28,9 @@ export class User implements IUser {
 
   @Column("text", { unique: true })
   email: string;
+
+  @Column("text")
+  userType: string;
 
   @Column("text")
   password: string;
@@ -40,6 +50,7 @@ export class User implements IUser {
     lastName: string,
     email: string,
     password: string,
+    userType: string,
     bookings: number[],
     createdAt: Date,
     isVerified: boolean
@@ -48,6 +59,7 @@ export class User implements IUser {
       (this.firstName = firstName),
       (this.lastName = lastName),
       (this.email = email),
+      (this.userType = userType),
       (this.bookings = bookings),
       (this.password = password),
       (this.isVerified = isVerified),
@@ -114,6 +126,54 @@ export class Booking implements IBooking {
       (this.userId = userId),
       (this.size = size),
       (this.length = length),
+      (this.status = status));
+  }
+}
+
+@Entity()
+export class AvailableDay implements IAvailableDay {
+  @PrimaryGeneratedColumn()
+  id?: number;
+
+  @Column()
+  day: Date;
+
+  @Column()
+  time: Timestamp[];
+
+  constructor(id: number, day: Date, time: Timestamp[]) {
+    ((this.id = id), (this.day = day), (this.time = time));
+  }
+}
+
+@Entity()
+export class City implements ICity {
+  @PrimaryGeneratedColumn()
+  id?: number;
+
+  @Column("text")
+  name: string;
+
+  @Column("bigint")
+  travelFee: number;
+
+  @Column()
+  activeBookings: number;
+
+  @Column("text")
+  status: string;
+
+  constructor(
+    id: number,
+    name: string,
+    status: string,
+    activeBookings: number,
+    travelFee: number
+  ) {
+    ((this.id = id),
+      (this.name = name),
+      (this.travelFee = travelFee),
+      (this.activeBookings = activeBookings),
       (this.status = status));
   }
 }

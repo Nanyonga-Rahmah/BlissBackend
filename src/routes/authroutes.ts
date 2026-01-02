@@ -96,7 +96,7 @@ export default function authRoutes(repo: PostgresStorageRepo) {
         authResponse:authResponse,
       });
     } catch (err: any) {
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: "User doesn´t exist" });
     }
   });
 

@@ -1,13 +1,13 @@
 import { DataSource } from "typeorm";
-import { Booking, Link, User } from "../models/models";
+import { Booking, City, Link, User } from "../models/models";
 import databaseConfig from "../config/databaseConfig";
-import { ILink, IStorageRepo, IUser } from "../interfaces/interfaces";
+import { ICity, ILink, IStorageRepo, IUser } from "../interfaces/interfaces";
 import { error } from "console";
 
 const db = databaseConfig.databaseConfig;
 
 export class PostgresStorageRepo implements IStorageRepo {
-  private readonly dataSource: DataSource;
+  public  dataSource: DataSource;
 
   constructor() {
     this.dataSource = new DataSource({
@@ -17,7 +17,7 @@ export class PostgresStorageRepo implements IStorageRepo {
       username: db.db_username,
       password: db.db_password,
       database: db.db_database,
-      entities: [User, Booking,Link],
+      entities: [User, Booking,Link,City],
       synchronize: true,
     });
   }
@@ -36,6 +36,11 @@ export class PostgresStorageRepo implements IStorageRepo {
   async storeUser(user: IUser): Promise<IUser> {
     const userRepo = this.dataSource.getRepository<IUser>(User);
     return await userRepo.save(user);
+  }
+
+   async stroreCity(city: ICity): Promise<ICity> {
+    const cityRepo = this.dataSource.getRepository<ICity>(City);
+    return await cityRepo.save(city);
   }
 
  async storeLink(link: ILink): Promise<ILink> {
@@ -64,16 +69,57 @@ export class PostgresStorageRepo implements IStorageRepo {
       where: { email: user_email },
       // relations: ['role_name', 'clientID'],
     });
-    // if (user?.role_name && typeof user.role_name === 'object') {
-    //     user.role_name = (user.role_name as any).roleName;
-    // }
-    // if (user?.clientID && typeof user.clientID === 'object') {
-    //     user.clientID = (user.clientID as any).clientID;
-    // }
+   
     if (!user) {
       throw error("User doesn't exist");
     }
     return user;
+  }
+
+  async getUserById(id: number): Promise<IUser> {
+    const userRepo = this.dataSource.getRepository<IUser>(User);
+    const user = await userRepo.findOne({
+      where: { id: id },
+      // relations: ['role_name', 'clientID'],
+    });
+   
+    if (!user) {
+      throw error("User doesn't exist");
+    }
+    return user;
+  }
+
+  async getAllCities(): Promise<ICity[]> {
+    const cityRepo= this.dataSource.getRepository<ICity>(City)
+      return await cityRepo.find({
+        });
+  }
+
+  async getCityById(id: number): Promise<ICity> {
+    const cityRepo=this.dataSource.getRepository<ICity>(City)
+    const city = await cityRepo.findOne({
+      where: { id: id },
+    });
+
+    if (!city) {
+      throw error("City doesn't exist");
+    }
+    return city;
+  }
+
+
+  async updateCity(id: number, updates: Partial<ICity>): Promise<ICity> {
+    const cityRepo = this.dataSource.getRepository(City);
+
+    const city = await cityRepo.findOneBy({ id: id });
+
+    if (!city) {
+      throw error("City doesn't exist");
+    }
+
+    Object.assign(city, updates);
+
+    return await cityRepo.save(city);
   }
 
   async getLinkByEmail(user_email: string): Promise<ILink> {

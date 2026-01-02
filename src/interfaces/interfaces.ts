@@ -1,3 +1,5 @@
+import { Timestamp } from "typeorm";
+
 export interface IUser {
   id?: number;
   lastName: string;
@@ -7,6 +9,7 @@ export interface IUser {
   bookings?: number[];
   isVerified?: boolean;
   createdAt: Date;
+  userType: string;
 }
 
 export interface ILink {
@@ -14,7 +17,7 @@ export interface ILink {
 
   user_email: string;
 
- isClicked:boolean;
+  isClicked: boolean;
 
   expires_at?: Date | undefined;
 }
@@ -26,11 +29,25 @@ export interface IBooking {
   bookingTime: string;
   isCanceled: boolean;
   status: string;
-  city:string
-  size?:string,
-  length?:string,
-  userId:number
+  city: string;
+  size?: string;
+  length?: string;
+  userId: number;
   bookingFee: string;
+}
+
+export interface IAvailableDay{
+  id?:number;
+  day:Date;
+  time:Timestamp[];
+}
+
+export interface ICity {
+  id?: number;
+  name: string;
+  travelFee: number;
+  status: string;
+  activeBookings: number;
 }
 
 export type TLogMethod = (message: string | Error, meta?: unknown) => void;
@@ -68,12 +85,16 @@ export interface IStorageRepo {
   destroy(): Promise<void>;
 
   storeUser(user: IUser): Promise<IUser>;
-  getUserByEmail(user_email:string):Promise<IUser>;
+  getUserByEmail(user_email: string): Promise<IUser>;
+  getUserById(id: number): Promise<IUser>;
   updateUser(user: IUser): Promise<IUser>;
   getAllUsers(): Promise<IUser[]>;
-  storeLink(link:ILink):Promise<ILink>
-  getLinkByEmail(user_email:string):Promise<ILink>;
-  getLinkById(id:number):Promise<ILink>;
-  updateLink(id: number, updates: Partial<ILink>):Promise<ILink>;
-
+  storeLink(link: ILink): Promise<ILink>;
+  getLinkByEmail(user_email: string): Promise<ILink>;
+  getLinkById(id: number): Promise<ILink>;
+  updateLink(id: number, updates: Partial<ILink>): Promise<ILink>;
+  stroreCity(city: ICity): Promise<ICity>;
+  getAllCities(): Promise<ICity[]>;
+  getCityById(id: number): Promise<ICity>;
+  updateCity(id: number, updates: Partial<ICity>): Promise<ICity>;
 }
