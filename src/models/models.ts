@@ -12,7 +12,10 @@ import type {
   IBooking,
   ICity,
   ILink,
+  IService,
   IUser,
+  IVariant,
+  TimeSlot,
 } from "../interfaces/interfaces.js";
 
 @Entity()
@@ -131,18 +134,105 @@ export class Booking implements IBooking {
 }
 
 @Entity()
+export class Variant implements IVariant {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @Column({ nullable: true })
+  length?: string;
+
+  @Column()
+  price: number;
+
+  @Column()
+  status: string;
+
+  @ManyToOne(() => Service, (service) => service.variants, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "serviceId" })
+  serviceId: number;
+
+  
+
+  constructor(
+    name: string,
+    price: number,
+    status: string,
+    length: string,
+    id: number,
+    serviceId: number
+  ) {
+    ((this.id = id),
+      (this.name = name),
+      (this.length = length),
+      (this.status = status),
+      (this.price = price),
+      (this.serviceId = serviceId));
+  }
+}
+
+@Entity()
+export class Service implements IService {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @Column()
+  image: string;
+
+  @Column()
+  description: string;
+
+  @Column()
+  status: string;
+
+  @OneToMany(() => Variant, (variant) => variant.id, {
+    onDelete: "CASCADE",
+  })
+  variants?: number[];
+
+  constructor(
+    id: number,
+    name: string,
+    image: string,
+    description: string,
+    status: string,
+    variants: number[]
+  ) {
+    ((this.id = id),
+      (this.name = name),
+      (this.image = image),
+      (this.description = description),
+      (this.variants = variants),
+      (this.status = status));
+  }
+}
+
+@Entity()
 export class AvailableDay implements IAvailableDay {
   @PrimaryGeneratedColumn()
   id?: number;
 
   @Column()
-  day: Date;
+  day: string;
+
+  @Column({ type: "jsonb", default: () => "'[]'" })
+  timeSlots: TimeSlot[];
 
   @Column()
-  time: Timestamp[];
+  status: string;
 
-  constructor(id: number, day: Date, time: Timestamp[]) {
-    ((this.id = id), (this.day = day), (this.time = time));
+  constructor(id: number, day: string, status: string, timeSlots: TimeSlot[]) {
+    ((this.id = id),
+      (this.day = day),
+      (this.status = status),
+      (this.timeSlots = timeSlots));
   }
 }
 

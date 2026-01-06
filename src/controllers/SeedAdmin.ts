@@ -29,7 +29,6 @@ export const seedAdmins = async (dataSource: DataSource) => {
     });
 
     if (exists) {
-      console.log(` Admin exists: ${admin.email}`);
       continue;
     }
 
@@ -47,6 +46,5 @@ export const seedAdmins = async (dataSource: DataSource) => {
       })
     );
 
-    console.log(`Admin created: ${admin.email}`);
   }
 };

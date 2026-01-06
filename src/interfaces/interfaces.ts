@@ -36,10 +36,13 @@ export interface IBooking {
   bookingFee: string;
 }
 
-export interface IAvailableDay{
-  id?:number;
-  day:Date;
-  time:Timestamp[];
+export type TimeSlot = { start: string; end: string };
+
+export interface IAvailableDay {
+  id?: number;
+  day: string;
+  timeSlots: TimeSlot[];
+  status: string;
 }
 
 export interface ICity {
@@ -48,6 +51,22 @@ export interface ICity {
   travelFee: number;
   status: string;
   activeBookings: number;
+}
+export interface IVariant {
+  id?: number;
+  name: string;
+  price: number;
+  length?: string;
+  status: string;
+  serviceId:number;
+}
+export interface IService {
+  id?: number;
+  name: string;
+  image: string;
+  status: string;
+  description: string;
+  variants?: number[];
 }
 
 export type TLogMethod = (message: string | Error, meta?: unknown) => void;
@@ -85,6 +104,8 @@ export interface IStorageRepo {
   destroy(): Promise<void>;
 
   storeUser(user: IUser): Promise<IUser>;
+  storeAvailableDay(day: IAvailableDay): Promise<IAvailableDay>;
+  getAvailableDays(): Promise<IAvailableDay[]>;
   getUserByEmail(user_email: string): Promise<IUser>;
   getUserById(id: number): Promise<IUser>;
   updateUser(user: IUser): Promise<IUser>;
@@ -94,6 +115,12 @@ export interface IStorageRepo {
   getLinkById(id: number): Promise<ILink>;
   updateLink(id: number, updates: Partial<ILink>): Promise<ILink>;
   stroreCity(city: ICity): Promise<ICity>;
+    storeService(service: IService): Promise<IService>;
+      storeVariant(variant: IVariant): Promise<IVariant>;
+
+getAllServices():Promise<IService[]>;
+getServiceById(id:number):Promise<IService>;
+getVariantsByServiceId(serviceId:number):Promise<IVariant[]>
   getAllCities(): Promise<ICity[]>;
   getCityById(id: number): Promise<ICity>;
   updateCity(id: number, updates: Partial<ICity>): Promise<ICity>;

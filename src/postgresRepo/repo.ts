@@ -1,13 +1,29 @@
 import { DataSource } from "typeorm";
-import { Booking, City, Link, User } from "../models/models";
+import {
+  AvailableDay,
+  Booking,
+  City,
+  Link,
+  User,
+  Service,
+  Variant,
+} from "../models/models";
 import databaseConfig from "../config/databaseConfig";
-import { ICity, ILink, IStorageRepo, IUser } from "../interfaces/interfaces";
+import {
+  IAvailableDay,
+  ICity,
+  ILink,
+  IService,
+  IStorageRepo,
+  IUser,
+  IVariant,
+} from "../interfaces/interfaces";
 import { error } from "console";
 
 const db = databaseConfig.databaseConfig;
 
 export class PostgresStorageRepo implements IStorageRepo {
-  public  dataSource: DataSource;
+  public dataSource: DataSource;
 
   constructor() {
     this.dataSource = new DataSource({
@@ -17,7 +33,7 @@ export class PostgresStorageRepo implements IStorageRepo {
       username: db.db_username,
       password: db.db_password,
       database: db.db_database,
-      entities: [User, Booking,Link,City],
+      entities: [User, Booking, Link, City, AvailableDay,Service,Variant],
       synchronize: true,
     });
   }
@@ -38,30 +54,29 @@ export class PostgresStorageRepo implements IStorageRepo {
     return await userRepo.save(user);
   }
 
-   async stroreCity(city: ICity): Promise<ICity> {
+  async stroreCity(city: ICity): Promise<ICity> {
     const cityRepo = this.dataSource.getRepository<ICity>(City);
     return await cityRepo.save(city);
   }
 
- async storeLink(link: ILink): Promise<ILink> {
-  const linkRepo = this.dataSource.getRepository(Link);
+  async storeLink(link: ILink): Promise<ILink> {
+    const linkRepo = this.dataSource.getRepository(Link);
 
-  let existingLink = await linkRepo.findOne({
-    where: { user_email: link.user_email },
-  });
+    let existingLink = await linkRepo.findOne({
+      where: { user_email: link.user_email },
+    });
 
-  if (existingLink) {
-    existingLink.user_email = link.user_email;
-    existingLink.expires_at = link.expires_at;
-    existingLink.isClicked = false; 
-    return await linkRepo.save(existingLink);
+    if (existingLink) {
+      existingLink.user_email = link.user_email;
+      existingLink.expires_at = link.expires_at;
+      existingLink.isClicked = false;
+      return await linkRepo.save(existingLink);
+    }
+
+    // If no existing link, create a new one
+    const newLink = linkRepo.create(link);
+    return await linkRepo.save(newLink);
   }
-
-  // If no existing link, create a new one
-  const newLink = linkRepo.create(link);
-  return await linkRepo.save(newLink);
-}
-
 
   async getUserByEmail(user_email: string): Promise<IUser> {
     const userRepo = this.dataSource.getRepository<IUser>(User);
@@ -69,7 +84,7 @@ export class PostgresStorageRepo implements IStorageRepo {
       where: { email: user_email },
       // relations: ['role_name', 'clientID'],
     });
-   
+
     if (!user) {
       throw error("User doesn't exist");
     }
@@ -82,7 +97,7 @@ export class PostgresStorageRepo implements IStorageRepo {
       where: { id: id },
       // relations: ['role_name', 'clientID'],
     });
-   
+
     if (!user) {
       throw error("User doesn't exist");
     }
@@ -90,13 +105,17 @@ export class PostgresStorageRepo implements IStorageRepo {
   }
 
   async getAllCities(): Promise<ICity[]> {
-    const cityRepo= this.dataSource.getRepository<ICity>(City)
-      return await cityRepo.find({
-        });
+    const cityRepo = this.dataSource.getRepository<ICity>(City);
+    return await cityRepo.find({});
+  }
+
+   async getAllServices(): Promise<IService[]> {
+    const serviceRepo = this.dataSource.getRepository<IService>(Service);
+    return await serviceRepo.find({});
   }
 
   async getCityById(id: number): Promise<ICity> {
-    const cityRepo=this.dataSource.getRepository<ICity>(City)
+    const cityRepo = this.dataSource.getRepository<ICity>(City);
     const city = await cityRepo.findOne({
       where: { id: id },
     });
@@ -106,6 +125,28 @@ export class PostgresStorageRepo implements IStorageRepo {
     }
     return city;
   }
+
+  async getServiceById(id: number): Promise<IService> {
+    const serviceRepo = this.dataSource.getRepository<IService>(Service);
+    const service = await serviceRepo.findOne({
+      where: { id: id },
+    });
+
+    if (!service) {
+      throw error("Service doesn't exist");
+    }
+    return service;
+  }
+
+  async getVariantsByServiceId(serviceId: number): Promise<IVariant[]> {
+  const variantRepo = this.dataSource.getRepository(Variant);
+
+  return await variantRepo.find({
+    where: {
+      serviceId: serviceId,
+    },
+  });
+}
 
 
   async updateCity(id: number, updates: Partial<ICity>): Promise<ICity> {
@@ -122,6 +163,32 @@ export class PostgresStorageRepo implements IStorageRepo {
     return await cityRepo.save(city);
   }
 
+  async storeAvailableDay(day: IAvailableDay): Promise<IAvailableDay> {
+    const availableRepo =
+      this.dataSource.getRepository<IAvailableDay>(AvailableDay);
+
+    return await availableRepo.save(day);
+  }
+
+  async storeService(service: IService): Promise<IService> {
+    const serviceRepo = this.dataSource.getRepository<IService>(Service);
+
+    return await serviceRepo.save(service);
+  }
+
+  async storeVariant(variant: IVariant): Promise<IVariant> {
+    const variantRepo = this.dataSource.getRepository<IVariant>(Variant);
+
+    return await variantRepo.save(variant);
+  }
+
+  async getAvailableDays(): Promise<IAvailableDay[]> {
+    const availableRepo =
+      this.dataSource.getRepository<IAvailableDay>(AvailableDay);
+
+    return await availableRepo.find({});
+  }
+
   async getLinkByEmail(user_email: string): Promise<ILink> {
     const userRepo = this.dataSource.getRepository<ILink>(Link);
     const link = await userRepo.findOne({
@@ -135,7 +202,7 @@ export class PostgresStorageRepo implements IStorageRepo {
     return link;
   }
 
-    async getLinkById(id: number): Promise<ILink> {
+  async getLinkById(id: number): Promise<ILink> {
     const userRepo = this.dataSource.getRepository<ILink>(Link);
     const link = await userRepo.findOne({
       where: { id: id },
