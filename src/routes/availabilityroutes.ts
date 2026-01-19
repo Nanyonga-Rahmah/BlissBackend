@@ -57,24 +57,7 @@ export default function availabilityRoutes(repo: PostgresStorageRepo) {
 
   router.get("/availableDays", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-
-      if (!authHeader) {
-        return res
-          .status(401)
-          .json({ message: "Authorization token is missing" });
-      }
-
-      const token = authHeader.split(" ")[1];
-
-      let tokenVerificationResult;
-      try {
-        tokenVerificationResult = await userController.verifyToken(token ?? "");
-      } catch (error) {
-        return res
-          .status(401)
-          .json({ message: "Token verification failed", error });
-      }
+     
 
       const alldays = await availabilityController.getAllAvailableDays();
 

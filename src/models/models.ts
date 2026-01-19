@@ -156,8 +156,6 @@ export class Variant implements IVariant {
   @JoinColumn({ name: "serviceId" })
   serviceId: number;
 
-  
-
   constructor(
     name: string,
     price: number,
@@ -191,11 +189,9 @@ export class Service implements IService {
 
   @Column()
   status: string;
-
-  @OneToMany(() => Variant, (variant) => variant.id, {
-    onDelete: "CASCADE",
-  })
-  variants?: number[];
+  
+@Column("simple-json", { nullable: true })
+  variants: number[];
 
   constructor(
     id: number,

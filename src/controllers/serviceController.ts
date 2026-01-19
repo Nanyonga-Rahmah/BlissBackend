@@ -35,6 +35,7 @@ export class ServiceController {
         description: service.description,
         image: service.image,
         status: service.status,
+        variants: service.variants as number[],
       };
 
       const createdService =
@@ -62,6 +63,14 @@ export class ServiceController {
 
       const createdVariant =
         await this.storageRepo.storeVariant(variantToCreate);
+
+      // const retrievedService = await this.storageRepo.getServiceById(
+      //   variant.serviceId
+      // );
+
+      await this.storageRepo.updateService(variant.serviceId, {
+        variants: [createdVariant.id ?? 0],
+      });
 
       if (!createdVariant) {
         throw Error("variant not found");
@@ -96,6 +105,21 @@ export class ServiceController {
       }
 
       return RetrievedServices;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllVariantsByServiceId(serviceId: number): Promise<IVariant[]> {
+    try {
+      const RetrievedVariants =
+        this.storageRepo.getVariantsByServiceId(serviceId);
+
+      if (!RetrievedVariants) {
+        throw Error("No Services Found");
+      }
+
+      return RetrievedVariants;
     } catch (error) {
       throw error;
     }

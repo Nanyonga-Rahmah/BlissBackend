@@ -124,4 +124,6 @@ getVariantsByServiceId(serviceId:number):Promise<IVariant[]>
   getAllCities(): Promise<ICity[]>;
   getCityById(id: number): Promise<ICity>;
   updateCity(id: number, updates: Partial<ICity>): Promise<ICity>;
+    updateService(id: number, updates: Partial<IService>): Promise<IService>;
+
 }

@@ -130,6 +130,7 @@ export class PostgresStorageRepo implements IStorageRepo {
     const serviceRepo = this.dataSource.getRepository<IService>(Service);
     const service = await serviceRepo.findOne({
       where: { id: id },
+      // relations:["variants"]
     });
 
     if (!service) {
@@ -161,6 +162,20 @@ export class PostgresStorageRepo implements IStorageRepo {
     Object.assign(city, updates);
 
     return await cityRepo.save(city);
+  }
+
+  async updateService(id: number, updates: Partial<IService>): Promise<IService> {
+    const serviceRepo = this.dataSource.getRepository(Service);
+
+    const service = await serviceRepo.findOneBy({ id: id });
+
+    if (!service) {
+      throw error("Service doesn't exist");
+    }
+
+    Object.assign(service, updates);
+
+    return await serviceRepo.save(service);
   }
 
   async storeAvailableDay(day: IAvailableDay): Promise<IAvailableDay> {

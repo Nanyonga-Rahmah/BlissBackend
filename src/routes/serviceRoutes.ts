@@ -53,8 +53,11 @@ router.post("/createService", upload.single("image"), async (req, res) => {
       description,
       status,
       image: imageUrl ?? "",
-      variants: variants ? JSON.parse(variants) : undefined,
+      variants: variants ? JSON.parse(variants) : [],
+
+      
     };
+
 
     const newService = await serviceController.createService(service);
 
@@ -110,24 +113,24 @@ router.post("/createVariant", async (req, res) => {
   // --- getAllCities ---
     router.get("/services", async (req, res) => {
       try {
-        const authHeader = req.headers.authorization;
+        // const authHeader = req.headers.authorization;
 
-        if (!authHeader) {
-          return res
-            .status(401)
-            .json({ message: "Authorization token is missing" });
-        }
+        // if (!authHeader) {
+        //   return res
+        //     .status(401)
+        //     .json({ message: "Authorization token is missing" });
+        // }
 
-        const token = authHeader.split(" ")[1];
+        // const token = authHeader.split(" ")[1];
 
-        let tokenVerificationResult;
-        try {
-          tokenVerificationResult = await userController.verifyToken(token ?? "");
-        } catch (error) {
-          return res
-            .status(401)
-            .json({ message: "Token verification failed", error });
-        }
+        // let tokenVerificationResult;
+        // try {
+        //   tokenVerificationResult = await userController.verifyToken(token ?? "");
+        // } catch (error) {
+        //   return res
+        //     .status(401)
+        //     .json({ message: "Token verification failed", error });
+        // }
 
         const allServices = await serviceController.getAllServices();
 
@@ -140,43 +143,60 @@ router.post("/createVariant", async (req, res) => {
       }
     });
 
-  //   router.patch("/cities/:id", async (req, res) => {
+    router.get("/services/:id", async (req, res) => {
 
-  //     try {
-  //       const cityId = Number(req.params.id);
-  //       const updates = req.body as Partial<ICity>;
+      try {
+        const serviceId = Number(req.params.id);
 
-  //       if (isNaN(cityId)) {
-  //         return res.status(400).json({ message: "Invalid city id" });
-  //       }
 
-  //       const authHeader = req.headers.authorization;
-  //       if (!authHeader) {
-  //         return res.status(401).json({ message: "Authorization token missing" });
-  //       }
+        if (isNaN(serviceId)) {
+          return res.status(400).json({ message: "Invalid service id" });
+        }
 
-  //       const token = authHeader.split(" ")[1];
+        
 
-  //       try {
-  //         await userController.verifyToken(token ?? "");
-  //       } catch {
-  //         return res.status(401).json({ message: "Invalid or expired token" });
-  //       }
 
-  //       if (Object.keys(updates).length === 0) {
-  //         return res.status(400).json({ message: "No update data provided" });
-  //       }
+       
 
-  //       const updatedCity = await cityController.updateCity(cityId, updates);
 
-  //       res.status(200).json({
-  //         message: "City updated successfully",
-  //         city: updatedCity,
-  //       });
-  //     } catch (err: any) {
-  //       res.status(500).json({ message: err.message });
-  //     }
-  //   });
+        const retrievedService = await serviceController.getServiceById(serviceId);
+
+        res.status(200).json({
+          message: "service retrieved successfully",
+          service: retrievedService,
+        });
+      } catch (err: any) {
+        res.status(500).json({ message: err.message });
+      }
+    });
+
+
+    router.get("/serviceVariants/:id", async (req, res) => {
+
+      try {
+        const serviceId = Number(req.params.id);
+
+
+        if (isNaN(serviceId)) {
+          return res.status(400).json({ message: "Invalid service id" });
+        }
+
+      
+
+
+        
+
+
+        const RetrievedVariants = await serviceController.getAllVariantsByServiceId(serviceId);
+
+        res.status(200).json({
+          message: "service retrieved successfully",
+          variants: RetrievedVariants,
+        });
+      } catch (err: any) {
+        res.status(500).json({ message: err.message });
+      }
+    });
 
   //   router.post("/resend-link", async (req, res) => {
   //     try {

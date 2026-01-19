@@ -52,24 +52,10 @@ export default function cityRoutes(repo: PostgresStorageRepo) {
   // --- getAllCities ---
   router.get("/cities", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
+     
 
-      if (!authHeader) {
-        return res
-          .status(401)
-          .json({ message: "Authorization token is missing" });
-      }
-
-      const token = authHeader.split(" ")[1];
-
-      let tokenVerificationResult;
-      try {
-        tokenVerificationResult = await userController.verifyToken(token ?? "");
-      } catch (error) {
-        return res
-          .status(401)
-          .json({ message: "Token verification failed", error });
-      }
+      
+      
 
       const allCities = await cityController.getAllCities();
 
