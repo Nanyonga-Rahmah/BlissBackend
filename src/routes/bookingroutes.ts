@@ -213,23 +213,6 @@ export default function bookingroutes(repo: PostgresStorageRepo) {
     }
   });
 
-  //   router.post("/resend-link", async (req, res) => {
-  //     try {
-  //       const { email } = req.body;
-
-  //       if (!email) {
-  //         return res.status(400).json({ message: "Email  is required" });
-  //       }
-
-  //       const token = await userController.SendSignupLink(email);
-
-  //       res.status(200).json({
-  //         message: "successful",
-  //       });
-  //     } catch (err: any) {
-  //       res.status(500).json({ message: "failure" });
-  //     }
-  //   });
 
   return router;
 }
