@@ -64,9 +64,7 @@ export class ServiceController {
       const createdVariant =
         await this.storageRepo.storeVariant(variantToCreate);
 
-      // const retrievedService = await this.storageRepo.getServiceById(
-      //   variant.serviceId
-      // );
+   
 
       await this.storageRepo.updateService(variant.serviceId, {
         variants: [createdVariant.id ?? 0],

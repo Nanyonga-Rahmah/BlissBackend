@@ -43,6 +43,7 @@ export const seedAdmins = async (dataSource: DataSource) => {
         userType: "admin",
         isVerified: true,
         password: hashed,
+        
       })
     );
 

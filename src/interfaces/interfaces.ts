@@ -24,16 +24,20 @@ export interface ILink {
 
 export interface IBooking {
   id?: number;
-  name: string;
+  serviceName: string;
   bookingDay: string;
   bookingTime: string;
   isCanceled: boolean;
+  cancelationReason?: string;
   status: string;
   city: string;
   size?: string;
   length?: string;
   userId: number;
-  bookingFee: string;
+  amount: string;
+  travelfee?: string;
+  servicefee?: string;
+  createdAt: Date;
 }
 
 export type TimeSlot = { start: string; end: string };
@@ -43,6 +47,7 @@ export interface IAvailableDay {
   day: string;
   timeSlots: TimeSlot[];
   status: string;
+  isBooked?: boolean;
 }
 
 export interface ICity {
@@ -58,7 +63,7 @@ export interface IVariant {
   price: number;
   length?: string;
   status: string;
-  serviceId:number;
+  serviceId: number;
 }
 export interface IService {
   id?: number;
@@ -106,24 +111,30 @@ export interface IStorageRepo {
   storeUser(user: IUser): Promise<IUser>;
   storeAvailableDay(day: IAvailableDay): Promise<IAvailableDay>;
   getAvailableDays(): Promise<IAvailableDay[]>;
+  getDayByDate(day: string): Promise<IAvailableDay>;
+  updateAvailableDay(id: number, updates: Partial<IAvailableDay>): Promise<IAvailableDay>;
   getUserByEmail(user_email: string): Promise<IUser>;
   getUserById(id: number): Promise<IUser>;
-  updateUser(user: IUser): Promise<IUser>;
+  updateUser(id:number,updates:Partial<IUser>): Promise<IUser>;
   getAllUsers(): Promise<IUser[]>;
   storeLink(link: ILink): Promise<ILink>;
   getLinkByEmail(user_email: string): Promise<ILink>;
   getLinkById(id: number): Promise<ILink>;
   updateLink(id: number, updates: Partial<ILink>): Promise<ILink>;
   stroreCity(city: ICity): Promise<ICity>;
-    storeService(service: IService): Promise<IService>;
-      storeVariant(variant: IVariant): Promise<IVariant>;
-
-getAllServices():Promise<IService[]>;
-getServiceById(id:number):Promise<IService>;
-getVariantsByServiceId(serviceId:number):Promise<IVariant[]>
+  storeService(service: IService): Promise<IService>;
+  storeBooking(booking: IBooking): Promise<IBooking>;
+  getBookingById(id: number): Promise<IBooking>;
+  getAllBookings(): Promise<IBooking[]>;
+  getUserBookings(userId: number): Promise<IBooking[]>;
+  getDayById(id: number): Promise<IAvailableDay>;
+  storeVariant(variant: IVariant): Promise<IVariant>;
+  updateBooking(id: number, updates: Partial<IBooking>): Promise<IBooking>;
+  getAllServices(): Promise<IService[]>;
+  getServiceById(id: number): Promise<IService>;
+  getVariantsByServiceId(serviceId: number): Promise<IVariant[]>;
   getAllCities(): Promise<ICity[]>;
   getCityById(id: number): Promise<ICity>;
   updateCity(id: number, updates: Partial<ICity>): Promise<ICity>;
-    updateService(id: number, updates: Partial<IService>): Promise<IService>;
-
+  updateService(id: number, updates: Partial<IService>): Promise<IService>;
 }

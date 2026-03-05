@@ -44,7 +44,7 @@ export class User implements IUser {
   @Column()
   createdAt: Date;
 
-  @OneToMany(() => Booking, (booking) => booking.id)
+  @Column("simple-json", { nullable: true })
   bookings: number[];
 
   constructor(
@@ -56,7 +56,7 @@ export class User implements IUser {
     userType: string,
     bookings: number[],
     createdAt: Date,
-    isVerified: boolean
+    isVerified: boolean,
   ) {
     ((this.id = id),
       (this.firstName = firstName),
@@ -75,7 +75,7 @@ export class Booking implements IBooking {
   id: number;
 
   @Column()
-  name: string;
+  serviceName: string;
 
   @Column()
   bookingDay: string;
@@ -98,35 +98,53 @@ export class Booking implements IBooking {
   @Column()
   status: string;
 
+  @Column()
+  createdAt: Date;
+
   @ManyToOne(() => User, (user) => user.id, {
     onDelete: "CASCADE",
   })
   userId: number;
 
   @Column()
-  bookingFee: string;
+  amount: string;
+
+  @Column({ nullable: true })
+  cancelationReason?: string;
+
+  @Column({ nullable: true })
+  travelfee?: string;
+
+  @Column({ nullable: true })
+  serviceFee?: string;
 
   constructor(
     id: number,
-    name: string,
+    serviceName: string,
     bookingDay: string,
     bookingTime: string,
     isCanceled: boolean,
     status: string,
     size: string,
     userId: number,
+    createdAt: Date,
+    travelfee: string,
+    servicefee: string,
     length: string,
     city: string,
-    bookingFee: string
+    amount: string,
   ) {
     ((this.id = id),
-      (this.name = name),
+      (this.serviceName = serviceName),
       (this.bookingDay = bookingDay),
       (this.bookingTime = bookingTime),
-      (this.bookingFee = bookingFee),
+      (this.amount = amount),
       (this.isCanceled = isCanceled),
       (this.city = city),
+      (this.createdAt = createdAt),
       (this.userId = userId),
+      (this.travelfee = travelfee),
+      (this.serviceFee = servicefee),
       (this.size = size),
       (this.length = length),
       (this.status = status));
@@ -162,7 +180,7 @@ export class Variant implements IVariant {
     status: string,
     length: string,
     id: number,
-    serviceId: number
+    serviceId: number,
   ) {
     ((this.id = id),
       (this.name = name),
@@ -189,8 +207,8 @@ export class Service implements IService {
 
   @Column()
   status: string;
-  
-@Column("simple-json", { nullable: true })
+
+  @Column("simple-json", { nullable: true })
   variants: number[];
 
   constructor(
@@ -199,7 +217,7 @@ export class Service implements IService {
     image: string,
     description: string,
     status: string,
-    variants: number[]
+    variants: number[],
   ) {
     ((this.id = id),
       (this.name = name),
@@ -215,8 +233,10 @@ export class AvailableDay implements IAvailableDay {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column()
-  day: string;
+  @Column({ type: "date", nullable: true }) day: string;
+
+  @Column({ nullable: true })
+  isBooked?: boolean;
 
   @Column({ type: "jsonb", default: () => "'[]'" })
   timeSlots: TimeSlot[];
@@ -224,9 +244,16 @@ export class AvailableDay implements IAvailableDay {
   @Column()
   status: string;
 
-  constructor(id: number, day: string, status: string, timeSlots: TimeSlot[]) {
+  constructor(
+    id: number,
+    day: string,
+    status: string,
+    isBooked: boolean,
+    timeSlots: TimeSlot[],
+  ) {
     ((this.id = id),
       (this.day = day),
+      (this.isBooked = isBooked),
       (this.status = status),
       (this.timeSlots = timeSlots));
   }
@@ -254,7 +281,7 @@ export class City implements ICity {
     name: string,
     status: string,
     activeBookings: number,
-    travelFee: number
+    travelFee: number,
   ) {
     ((this.id = id),
       (this.name = name),
@@ -283,7 +310,7 @@ export class Link implements ILink {
     user_email: string,
 
     isClicked: boolean,
-    expires_at: Date
+    expires_at: Date,
   ) {
     this.id = id;
     this.user_email = user_email;

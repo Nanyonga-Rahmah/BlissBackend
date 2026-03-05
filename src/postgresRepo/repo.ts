@@ -11,6 +11,7 @@ import {
 import databaseConfig from "../config/databaseConfig";
 import {
   IAvailableDay,
+  IBooking,
   ICity,
   ILink,
   IService,
@@ -33,7 +34,7 @@ export class PostgresStorageRepo implements IStorageRepo {
       username: db.db_username,
       password: db.db_password,
       database: db.db_database,
-      entities: [User, Booking, Link, City, AvailableDay,Service,Variant],
+      entities: [User, Booking, Link, City, AvailableDay, Service, Variant],
       synchronize: true,
     });
   }
@@ -104,12 +105,49 @@ export class PostgresStorageRepo implements IStorageRepo {
     return user;
   }
 
+  async getBookingById(id: number): Promise<IBooking> {
+    const bookingRepo = this.dataSource.getRepository<IBooking>(Booking);
+    const booking = await bookingRepo.findOne({
+      where: { id: id },
+    });
+    if (!booking) {
+      throw error("Booking doesn't exist");
+    }
+    return booking;
+  }
+
+  async getAllBookings(): Promise<IBooking[]> {
+    const bookingRepo = this.dataSource.getRepository<IBooking>(Booking);
+    return await bookingRepo.find({});
+  } 
+
+  async getUserBookings(userId: number): Promise<IBooking[]> {
+    const bookingRepo = this.dataSource.getRepository<IBooking>(Booking);
+    return await bookingRepo.find({
+      where: { userId: userId },
+    });
+  }
+
+  async updateBooking(id: number, updates: Partial<IBooking>): Promise<IBooking> {
+    const bookingRepo = this.dataSource.getRepository(Booking);
+
+    const booking = await bookingRepo.findOneBy({ id: id });
+
+    if (!booking) {
+      throw error("Booking doesn't exist");
+    }
+
+    Object.assign(booking, updates);
+
+    return await bookingRepo.save(booking);
+  }
+
   async getAllCities(): Promise<ICity[]> {
     const cityRepo = this.dataSource.getRepository<ICity>(City);
     return await cityRepo.find({});
   }
 
-   async getAllServices(): Promise<IService[]> {
+  async getAllServices(): Promise<IService[]> {
     const serviceRepo = this.dataSource.getRepository<IService>(Service);
     return await serviceRepo.find({});
   }
@@ -140,15 +178,14 @@ export class PostgresStorageRepo implements IStorageRepo {
   }
 
   async getVariantsByServiceId(serviceId: number): Promise<IVariant[]> {
-  const variantRepo = this.dataSource.getRepository(Variant);
+    const variantRepo = this.dataSource.getRepository(Variant);
 
-  return await variantRepo.find({
-    where: {
-      serviceId: serviceId,
-    },
-  });
-}
-
+    return await variantRepo.find({
+      where: {
+        serviceId: serviceId,
+      },
+    });
+  }
 
   async updateCity(id: number, updates: Partial<ICity>): Promise<ICity> {
     const cityRepo = this.dataSource.getRepository(City);
@@ -164,7 +201,10 @@ export class PostgresStorageRepo implements IStorageRepo {
     return await cityRepo.save(city);
   }
 
-  async updateService(id: number, updates: Partial<IService>): Promise<IService> {
+  async updateService(
+    id: number,
+    updates: Partial<IService>,
+  ): Promise<IService> {
     const serviceRepo = this.dataSource.getRepository(Service);
 
     const service = await serviceRepo.findOneBy({ id: id });
@@ -191,12 +231,60 @@ export class PostgresStorageRepo implements IStorageRepo {
     return await serviceRepo.save(service);
   }
 
+  async storeBooking(booking: IBooking): Promise<IBooking> {
+    const bookingRepo = this.dataSource.getRepository<IBooking>(Booking);
+
+    return await bookingRepo.save(booking);
+  }
+
+  async getDayByDate(day: string): Promise<IAvailableDay> {
+    const availableDay = await this.dataSource
+      .getRepository(AvailableDay)
+      .createQueryBuilder("day")
+      .where("DATE(day.day) = :day", { day: day })
+      .getOne();
+
+    if (!availableDay) {
+      throw error("Available day doesn't exist");
+    }
+    return availableDay;
+  }
+
+  async updateAvailableDay(
+    id: number,
+    updates: Partial<IAvailableDay>,
+  ): Promise<IAvailableDay> {
+    const availableRepo = this.dataSource.getRepository(AvailableDay);
+
+    const availableDay = await availableRepo.findOneBy({ id: id });
+
+    if (!availableDay) {
+      throw error("Available day doesn't exist");
+    }
+
+    Object.assign(availableDay, updates);
+
+    return await availableRepo.save(availableDay);
+  }
+
   async storeVariant(variant: IVariant): Promise<IVariant> {
     const variantRepo = this.dataSource.getRepository<IVariant>(Variant);
 
     return await variantRepo.save(variant);
   }
 
+  async getDayById(id: number): Promise<IAvailableDay> {
+    const availableRepo =
+      this.dataSource.getRepository<IAvailableDay>(AvailableDay);
+    const availableDay = await availableRepo.findOne({
+      where: { id: id },
+    });
+
+    if (!availableDay) {
+      throw error("Available day doesn't exist");
+    }
+    return availableDay;
+  }
   async getAvailableDays(): Promise<IAvailableDay[]> {
     const availableRepo =
       this.dataSource.getRepository<IAvailableDay>(AvailableDay);
@@ -243,20 +331,18 @@ export class PostgresStorageRepo implements IStorageRepo {
 
     return await linkRepo.save(link);
   }
-  async updateUser(user: IUser): Promise<IUser> {
+  async updateUser(id: number, updates: Partial<IUser>): Promise<IUser> {
     const userRepo = this.dataSource.getRepository(User);
-    if (!user.id) {
-      throw new Error("ID is required");
+
+    const user = await userRepo.findOneBy({ id: id });
+
+    if (!user) {
+      throw error("User doesn't exist");
     }
 
-    const existingUser = await userRepo.findOne({ where: { id: user.id } });
-    if (!existingUser) {
-      throw new Error(`User with id ${user.id} not found`);
-    }
+    Object.assign(user, updates);
 
-    const updatedUser = userRepo.merge(existingUser, user);
-
-    return await userRepo.save(updatedUser);
+    return await userRepo.save(user);
   }
 
   async getAllUsers(): Promise<IUser[]> {
