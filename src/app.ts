@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
 import swaggerJSDoc from "swagger-jsdoc";
@@ -9,17 +8,28 @@ import swaggerUI from "swagger-ui-express";
 
 import { PostgresStorageRepo } from "./postgresRepo/repo";
 import { routes } from "./routes/index";
+import { seedAdmins } from "./controllers/SeedAdmin";
 
 const app: Application = express();
 const storage = new PostgresStorageRepo();
 
-
 // Init database
-storage.init().then(() => {
-  console.log("Database connected.");
-}).catch((err) => {
-  console.error("Database connection failed:", err);
-});
+(async () => {
+  try {
+    await storage.init();
+    console.log("Database connected.");
+
+    await seedAdmins(storage.dataSource);
+    console.log("Admin seeding completed.");
+  } catch (err) {
+    console.error("Database connection failed:", err);
+    process.exit(1);
+  }
+})();
+
+
+
+
 
 app.use(express.json({ limit: "1gb" }));
 app.use(express.urlencoded({ limit: "1gb", extended: true }));
@@ -59,7 +69,7 @@ app.set("strict routing", true);
 app.set("case sensitive routing", true);
 
 // Register routes
-app.use("/api/v1", routes(storage)); 
+app.use("/api/v1", routes(storage));
 
 // Health check
 app.get("/api/v1/health", (req, res) => {
@@ -76,7 +86,5 @@ app.get("/api/v1/health", (req, res) => {
 //     message: `Route ${req.originalUrl} not found.`,
 //   });
 // });
-
-
 
 export { app };

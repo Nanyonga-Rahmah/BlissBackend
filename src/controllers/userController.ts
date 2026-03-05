@@ -197,6 +197,20 @@ export class UserController {
     }
   }
 
+  async getUserById(id:number):Promise<IUser>{
+    try {
+      const user= await this.getUserById(id)
+
+      if(!user){
+        throw Error("No User Found")
+      }
+      return user
+      
+    } catch (error) {
+      throw error
+    }
+  }
+
 
   
 
@@ -212,6 +226,7 @@ export class UserController {
         createdAt: currentDate,
         isVerified: false,
         email: user.email,
+        userType:"user",
         lastName: user.lastName,
       };
 

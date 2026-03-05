@@ -80,14 +80,20 @@ export default function authRoutes(repo: PostgresStorageRepo) {
       const user = await repo.getUserByEmail(email);
 
       if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return res.status(401).json({ message: "User doesn´t exist" });
       }
+
 
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
+
+
+      if(user.isVerified === false){
+        return res.status(401).json({ message: "User not verified" });
+      }
       const authResponse = await userController.authenticate(user)
 
 
@@ -96,7 +102,7 @@ export default function authRoutes(repo: PostgresStorageRepo) {
         authResponse:authResponse,
       });
     } catch (err: any) {
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: "User doesn´t exist" });
     }
   });
 
