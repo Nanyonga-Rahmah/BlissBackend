@@ -12,7 +12,6 @@ import type {
   IBooking,
   ICity,
   ILink,
-  IPayment,
   IService,
   IUser,
   IVariant,
@@ -152,13 +151,7 @@ export class Booking implements IBooking {
   }
 }
 
-@Entity
-export class Payment implements IPayment{
-  @PrimaryGeneratedColumn()
-  id: number;
 
-  
-}
 
 @Entity()
 export class Variant implements IVariant {

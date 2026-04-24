@@ -35,31 +35,31 @@ export default function paymentRoutes(repo: PostgresStorageRepo) {
   });
 
   // REFUND PAYMENT
-  router.post("/payments/refund", async (req, res) => {
-    const { paymentIntentId, amount } = req.body;
+  // router.post("/payments/refund", async (req, res) => {
+  //   const { paymentIntentId, amount } = req.body;
 
-    try {
-      const refundData: Stripe.RefundCreateParams = {
-        payment_intent: paymentIntentId,
-      };
+  //   try {
+  //     const refundData: Stripe.RefundCreateParams = {
+  //       payment_intent: paymentIntentId,
+  //     };
 
-      if (amount) {
-        refundData.amount = amount * 100;
-      }
-      const refund = await stripe.refunds.create(refundData);
+  //     if (amount) {
+  //       refundData.amount = amount * 100;
+  //     }
+  //     const refund = await stripe.refunds.create(refundData);
 
-      res.json({
-        success: true,
-        refundId: refund.id,
-        status: refund.status,
-      });
-    } catch (error: any) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  });
+  //     res.json({
+  //       success: true,
+  //       refundId: refund.id,
+  //       status: refund.status,
+  //     });
+  //   } catch (error: any) {
+  //     res.status(400).json({
+  //       success: false,
+  //       message: error.message,
+  //     });
+  //   }
+  // });
 
   return router;
 }
