@@ -30,7 +30,7 @@ export class PostgresStorageRepo implements IStorageRepo {
     this.dataSource = new DataSource({
       type: "postgres",
       host: db.db_host,
-      port: 5433,
+      port: 5432,
       username: db.db_username,
       password: db.db_password,
       database: db.db_database,
