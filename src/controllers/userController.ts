@@ -147,7 +147,7 @@ export class UserController {
       isClicked: true,
     });
 
-    await this.storageRepo.updateUser({ ...retrievedUser, isVerified: true });
+    await this.storageRepo.updateUser(retrievedUser.id ?? 0, { isVerified: true });
 
     return updatedLink;
   }
@@ -212,7 +212,18 @@ export class UserController {
   }
 
 
-  
+  async getAllUsers(): Promise<IUser[]> {
+    try {
+      const users = await this.storageRepo.getAllUsers();
+
+      if (!users) {
+        throw Error("No Users Found");
+      }
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async createUser(user: IUser): Promise<IUser> {
     try {
@@ -243,3 +254,6 @@ export class UserController {
     }
   }
 }
+
+
+

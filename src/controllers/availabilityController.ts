@@ -17,6 +17,7 @@ import VerifyEmail from "../views/user_verification";
 
 import { Resend } from "resend";
 import { error } from "console";
+import AvailabilityEmail from "../views/availability";
 const secret = databaseConfig.secretStore;
 
 const resend = new Resend(secret.resend_api);
@@ -28,26 +29,50 @@ export class AvailabilityController {
   ) {}
 
   async createAvailability(
-    availableday: IAvailableDay
-  ): Promise<IAvailableDay> {
-    try {
-      const dayToCreate: IAvailableDay = {
-        day: availableday.day,
-        status: "available",
-        timeSlots: availableday.timeSlots,
-      };
+  availableday: IAvailableDay
+): Promise<IAvailableDay> {
+  try {
+    const dayToCreate: IAvailableDay = {
+      day: availableday.day,
+      status: "available",
+      timeSlots: availableday.timeSlots,
+    };
 
-      const createdDay = await this.storageRepo.storeAvailableDay(dayToCreate);
+    const createdDay = await this.storageRepo.storeAvailableDay(dayToCreate);
 
-      if (!createdDay) {
-        throw Error("Day not found");
-      }
-
-      return createdDay;
-    } catch (error) {
-      throw error;
+    if (!createdDay) {
+      throw new Error("Day not created");
     }
+
+    const users = await this.storageRepo.getAllUsers();
+
+    const from = Resend_from;
+    const subject = "New Availability Created";
+
+    await Promise.all(
+      users.map(async (user) => {
+        const html = await render(
+          React.createElement(AvailabilityEmail, {
+            name: user.firstName,
+            day: createdDay.day,
+            timeSlots: createdDay.timeSlots,
+          })
+        );
+
+        return resend.emails.send({
+          to: user.email,
+          subject,
+          html,
+          from,
+        });
+      })
+    );
+
+    return createdDay;
+  } catch (error) {
+    throw error;
   }
+}
 
   async getCityById(id: number): Promise<ICity> {
     try {

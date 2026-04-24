@@ -50,6 +50,12 @@ export interface IAvailableDay {
   isBooked?: boolean;
 }
 
+export interface IPayment{
+  id?:number;
+  paymentMethod:string,
+  status:string
+}
+
 export interface ICity {
   id?: number;
   name: string;
