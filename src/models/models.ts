@@ -12,6 +12,7 @@ import type {
   IBooking,
   ICity,
   ILink,
+  IPayment,
   IService,
   IUser,
   IVariant,
@@ -149,6 +150,14 @@ export class Booking implements IBooking {
       (this.length = length),
       (this.status = status));
   }
+}
+
+@Entity
+export class Payment implements IPayment{
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  
 }
 
 @Entity()

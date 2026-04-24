@@ -349,6 +349,7 @@ export class PostgresStorageRepo implements IStorageRepo {
     const UserRepo = this.dataSource.getRepository<IUser>(User);
     return await UserRepo.find({
       order: { createdAt: "desc" },
+      where:{userType:"user"}
     });
   }
 }
