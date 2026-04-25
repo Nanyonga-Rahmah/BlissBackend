@@ -73,8 +73,8 @@ export const VerifyEmail = ({ name, email }: Props) => {
             Your verification link
           </Text>
           <Button
-            // href={`https://www.blissbyamina.com/auth/verify-email?email=${encodeURIComponent(email)}`}
-            href="http://localhost:5173/auth/verify-email?email=${encodeURIComponent(email)}"
+            href={`https://www.blissbyamina.com/auth/verify-email?email=${encodeURIComponent(email)}`}
+            // href="http://localhost:5173/auth/verify-email?email=${encodeURIComponent(email)}"
             style={{
               display: "inline-block",
               padding: "12px 24px",
