@@ -51,11 +51,14 @@ export interface IAvailableDay {
 }
 
 export interface IPayment{
-  id?:number;
+  id?:string;
   paymentMethod:string,
-  paymentIntentId:number,
+  paymentIntentId:string,
   status:string,
   amount:number,
+  city:string,
+  customerName:string,
+  createdAt:Date
 }
 
 export interface ICity {
@@ -118,6 +121,7 @@ export interface IStorageRepo {
 
   storeUser(user: IUser): Promise<IUser>;
     storePayment(payment: IPayment): Promise<IPayment>;
+  getAllPayments(): Promise<IPayment[]>;
 
   storeAvailableDay(day: IAvailableDay): Promise<IAvailableDay>;
   getAvailableDays(): Promise<IAvailableDay[]>;
