@@ -12,6 +12,7 @@ import type {
   IBooking,
   ICity,
   ILink,
+  IPayment,
   IService,
   IUser,
   IVariant,
@@ -151,8 +152,6 @@ export class Booking implements IBooking {
   }
 }
 
-
-
 @Entity()
 export class Variant implements IVariant {
   @PrimaryGeneratedColumn()
@@ -227,6 +226,38 @@ export class Service implements IService {
       (this.description = description),
       (this.variants = variants),
       (this.status = status));
+  }
+}
+
+@Entity()
+export class Payment implements IPayment {
+  @PrimaryGeneratedColumn()
+  id?: number;
+
+  @Column()
+  status: string;
+
+  @Column()
+  paymentMethod: string;
+
+  @Column()
+  paymentIntentId: number;
+
+  @Column()
+  amount: number;
+
+  constructor(
+    id: number,
+    paymentMethod: string,
+    paymentIntentId: number,
+    status: string,
+    amount: number,
+  ) {
+    ((this.id = id),
+      (this.paymentIntentId = paymentIntentId),
+      (this.status = status),
+      (this.paymentMethod = paymentMethod));
+    this.amount = amount;
   }
 }
 

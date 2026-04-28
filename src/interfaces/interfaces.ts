@@ -50,11 +50,13 @@ export interface IAvailableDay {
   isBooked?: boolean;
 }
 
-// export interface IPayment{
-//   id?:number;
-//   paymentMethod:string,
-//   status:string
-// }
+export interface IPayment{
+  id?:number;
+  paymentMethod:string,
+  paymentIntentId:number,
+  status:string,
+  amount:number,
+}
 
 export interface ICity {
   id?: number;
@@ -115,6 +117,8 @@ export interface IStorageRepo {
   destroy(): Promise<void>;
 
   storeUser(user: IUser): Promise<IUser>;
+    storePayment(payment: IPayment): Promise<IPayment>;
+
   storeAvailableDay(day: IAvailableDay): Promise<IAvailableDay>;
   getAvailableDays(): Promise<IAvailableDay[]>;
   getDayByDate(day: string): Promise<IAvailableDay>;
@@ -143,4 +147,6 @@ export interface IStorageRepo {
   getCityById(id: number): Promise<ICity>;
   updateCity(id: number, updates: Partial<ICity>): Promise<ICity>;
   updateService(id: number, updates: Partial<IService>): Promise<IService>;
+    updateVariant(id: number, updates: Partial<IVariant>): Promise<IVariant>;
+
 }

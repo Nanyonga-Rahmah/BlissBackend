@@ -124,7 +124,7 @@ export class UserController {
     }
   }
 
-  async onClickVerify({ email }: { email: string }): Promise<ILink> {
+  async onClickVerify( email:string): Promise<ILink> {
     const retrievedLink = await this.storageRepo.getLinkByEmail(email);
     const retrievedUser = await this.storageRepo.getUserByEmail(email);
     if (!retrievedLink) {
