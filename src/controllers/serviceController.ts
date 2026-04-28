@@ -123,7 +123,11 @@ export class ServiceController {
     }
   }
 
-  async updateCity(id: number, updates: Partial<ICity>) {
-    return this.storageRepo.updateCity(id, updates);
+  async updateVariant(id: number, updates: Partial<IVariant>) {
+    return this.storageRepo.updateVariant(id, updates);
+  }
+
+  async updateService(id: number, updates: Partial<IService>) {
+    return this.storageRepo.updateService(id, updates);
   }
 }

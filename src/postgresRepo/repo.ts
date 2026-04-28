@@ -7,6 +7,7 @@ import {
   User,
   Service,
   Variant,
+  Payment,
 } from "../models/models";
 import databaseConfig from "../config/databaseConfig";
 import {
@@ -14,6 +15,7 @@ import {
   IBooking,
   ICity,
   ILink,
+  IPayment,
   IService,
   IStorageRepo,
   IUser,
@@ -53,6 +55,11 @@ export class PostgresStorageRepo implements IStorageRepo {
   async storeUser(user: IUser): Promise<IUser> {
     const userRepo = this.dataSource.getRepository<IUser>(User);
     return await userRepo.save(user);
+  }
+
+  async storePayment(payment: IPayment): Promise<IPayment> {
+    const paymentRepo = this.dataSource.getRepository<IPayment>(Payment);
+    return await paymentRepo.save(payment);
   }
 
   async stroreCity(city: ICity): Promise<ICity> {
@@ -216,6 +223,24 @@ export class PostgresStorageRepo implements IStorageRepo {
     Object.assign(service, updates);
 
     return await serviceRepo.save(service);
+  }
+
+
+  async updateVariant(
+    id: number,
+    updates: Partial<IVariant>,
+  ): Promise<IVariant> {
+    const variantRepo = this.dataSource.getRepository(Variant);
+
+    const variant = await variantRepo.findOneBy({ id: id });
+
+    if (!variant) {
+      throw error("Variant doesn't exist");
+    }
+
+    Object.assign(variant, updates);
+
+    return await variantRepo.save(variant);
   }
 
   async storeAvailableDay(day: IAvailableDay): Promise<IAvailableDay> {
