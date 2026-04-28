@@ -25,7 +25,7 @@ const Resend_from = secret.from;
 
 export class ServiceController {
   constructor(
-    private readonly storageRepo: IStorageRepo // private readonly logger: ILogger
+    private readonly storageRepo: IStorageRepo, // private readonly logger: ILogger
   ) {}
 
   async createService(service: IService): Promise<IService> {
@@ -64,22 +64,27 @@ export class ServiceController {
       const createdVariant =
         await this.storageRepo.storeVariant(variantToCreate);
 
-   
-
-      await this.storageRepo.updateService(variant.serviceId, {
-        variants: [createdVariant.id ?? 0],
-      });
-
       if (!createdVariant) {
-        throw Error("variant not found");
+        throw new Error("Variant not created");
       }
+
+      // Get existing service
+      const service = await this.storageRepo.getServiceById(variant.serviceId);
+
+      const existingVariants = service?.variants || [];
+
+      if (createdVariant.id === undefined) {
+        throw new Error("Created variant has no id");
+      }
+      await this.storageRepo.updateService(variant.serviceId, {
+        variants: [...existingVariants, createdVariant.id],
+      });
 
       return createdVariant;
     } catch (error) {
       throw error;
     }
   }
-
   async getServiceById(id: number): Promise<IService> {
     try {
       const RetrievedService = this.storageRepo.getServiceById(id);
