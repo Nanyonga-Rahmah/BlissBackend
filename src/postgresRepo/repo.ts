@@ -126,7 +126,7 @@ export class PostgresStorageRepo implements IStorageRepo {
   async getAllBookings(): Promise<IBooking[]> {
     const bookingRepo = this.dataSource.getRepository<IBooking>(Booking);
     return await bookingRepo.find({});
-  } 
+  }
 
   async getUserBookings(userId: number): Promise<IBooking[]> {
     const bookingRepo = this.dataSource.getRepository<IBooking>(Booking);
@@ -135,7 +135,10 @@ export class PostgresStorageRepo implements IStorageRepo {
     });
   }
 
-  async updateBooking(id: number, updates: Partial<IBooking>): Promise<IBooking> {
+  async updateBooking(
+    id: number,
+    updates: Partial<IBooking>,
+  ): Promise<IBooking> {
     const bookingRepo = this.dataSource.getRepository(Booking);
 
     const booking = await bookingRepo.findOneBy({ id: id });
@@ -187,11 +190,16 @@ export class PostgresStorageRepo implements IStorageRepo {
   async getVariantsByServiceId(serviceId: number): Promise<IVariant[]> {
     const variantRepo = this.dataSource.getRepository(Variant);
 
-    return await variantRepo.find({
-      where: {
-        serviceId: serviceId,
-      },
-    });
+    const variants = await variantRepo
+      .createQueryBuilder("variant")
+      .where("variant.serviceId = :serviceId", { serviceId })
+      .getMany();
+
+    if (variants.length === 0) {
+      throw new Error("No variants for this service");
+    }
+
+    return variants;
   }
 
   async updateCity(id: number, updates: Partial<ICity>): Promise<ICity> {
@@ -224,7 +232,6 @@ export class PostgresStorageRepo implements IStorageRepo {
 
     return await serviceRepo.save(service);
   }
-
 
   async updateVariant(
     id: number,
@@ -374,7 +381,7 @@ export class PostgresStorageRepo implements IStorageRepo {
     const UserRepo = this.dataSource.getRepository<IUser>(User);
     return await UserRepo.find({
       order: { createdAt: "desc" },
-      where:{userType:"user"}
+      where: { userType: "user" },
     });
   }
 }
