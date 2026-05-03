@@ -384,4 +384,12 @@ export class PostgresStorageRepo implements IStorageRepo {
       where: { userType: "user" },
     });
   }
+
+
+  async getAllPayments(): Promise<IPayment[]> {
+    const paymentRepo = this.dataSource.getRepository<IPayment>(Payment);
+    return await paymentRepo.find({
+      order: { createdAt: "desc" },
+    });
+  }
 }

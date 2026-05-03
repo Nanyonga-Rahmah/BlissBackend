@@ -231,8 +231,14 @@ export class Service implements IService {
 
 @Entity()
 export class Payment implements IPayment {
-  @PrimaryGeneratedColumn()
-  id?: number;
+  @Column()
+  id?: string;
+
+  @Column()
+  customerName: string;
+
+  @Column()
+  city: string;
 
   @Column()
   status: string;
@@ -241,19 +247,28 @@ export class Payment implements IPayment {
   paymentMethod: string;
 
   @Column()
-  paymentIntentId: number;
+  paymentIntentId: string;
 
   @Column()
   amount: number;
 
+  @Column()
+  createdAt: Date;
+
   constructor(
-    id: number,
+    id: string,
+    customerName: string,
+    city: string,
+    createdAt: Date,
     paymentMethod: string,
-    paymentIntentId: number,
+    paymentIntentId: string,
     status: string,
     amount: number,
   ) {
     ((this.id = id),
+      (this.customerName = customerName),
+      (this.city = city),
+      (this.createdAt = createdAt),
       (this.paymentIntentId = paymentIntentId),
       (this.status = status),
       (this.paymentMethod = paymentMethod));

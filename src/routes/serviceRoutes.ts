@@ -42,8 +42,6 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
 
       const imageUrl = await uploadImageToDropbox(req.file);
 
-      console.log(imageUrl);
-
       const service: IService = {
         name,
         description,
@@ -132,11 +130,9 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
       res.status(500).json({ message: "failure" });
     }
   });
-
-  router.patch("/services/:id", async (req, res) => {
+  router.patch("/services/:id", upload.single("image"), async (req, res) => {
     try {
       const serviceId = Number(req.params.id);
-      const updates = req.body as Partial<IService>;
 
       if (isNaN(serviceId)) {
         return res.status(400).json({ message: "Invalid service id" });
@@ -155,23 +151,40 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
         return res.status(401).json({ message: "Invalid or expired token" });
       }
 
+      const updates: Partial<IService> = {
+        name: req.body.name,
+        description: req.body.description,
+        status: req.body.status,
+      };
+
+      if (req.body.removeImage === "true") {
+        updates.image = "";
+      }
+
+      const file = req.file;
+      if (file) {
+        const imageUrl = await uploadImageToDropbox(file);
+        updates.image = imageUrl;
+      }
+
       if (Object.keys(updates).length === 0) {
         return res.status(400).json({ message: "No update data provided" });
       }
 
-      const updatedVariant = await serviceController.updateService(
+      const updatedService = await serviceController.updateService(
         serviceId,
         updates,
       );
 
       res.status(200).json({
-        message: "Variant updated successfully",
-        city: updatedVariant,
+        message: "Service updated successfully",
+        service: updatedService,
       });
     } catch (err: any) {
       res.status(500).json({ message: err.message });
     }
   });
+
   router.patch("/services/variants/:id", async (req, res) => {
     try {
       const variantId = Number(req.params.id);
@@ -247,6 +260,26 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
       res.status(200).json({
         message: "service retrieved successfully",
         variants: RetrievedVariants,
+      });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  router.get("/service/:id", async (req, res) => {
+    try {
+      const serviceId = Number(req.params.id);
+
+      if (isNaN(serviceId)) {
+        return res.status(400).json({ message: "Invalid service id" });
+      }
+
+      const RetrievedService =
+        await serviceController.getServiceById(serviceId);
+
+      res.status(200).json({
+        message: "service retrieved successfully",
+        variants: RetrievedService,
       });
     } catch (err: any) {
       res.status(500).json({ message: err.message });
