@@ -130,6 +130,19 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
       res.status(500).json({ message: "failure" });
     }
   });
+
+  router.get("/activeServices", async (req, res) => {
+    try {
+      const allServices = await serviceController.getActiveServices();
+
+      res.status(200).json({
+        message: "Services retrieved successfully",
+        services: allServices,
+      });
+    } catch (err: any) {
+      res.status(500).json({ message: "failure" });
+    }
+  });
   router.patch("/services/:id", upload.single("image"), async (req, res) => {
     try {
       const serviceId = Number(req.params.id);
@@ -220,6 +233,72 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
       res.status(200).json({
         message: "Variant updated successfully",
         city: updatedVariant,
+      });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  router.delete("/services/:id", async (req, res) => {
+    try {
+      const serviceId = Number(req.params.id);
+
+      if (isNaN(serviceId)) {
+        return res.status(400).json({ message: "Invalid service id" });
+      }
+
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: "Authorization token missing" });
+      }
+
+      const token = authHeader.split(" ")[1];
+
+      try {
+        await userController.verifyToken(token ?? "");
+      } catch {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      }
+
+      const deletedService = await serviceController.deleteService(serviceId);
+
+      res.status(200).json({
+        message: "Service deleted successfully",
+        service: deletedService,
+      });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+
+  router.delete("/variants/:serviceId/:id", async (req, res) => {
+    try {
+      const variantId = Number(req.params.id);
+      const serviceId = Number(req.params.serviceId);
+
+      if (isNaN(variantId)) {
+        return res.status(400).json({ message: "Invalid variant id" });
+      }
+
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: "Authorization token missing" });
+      }
+
+      const token = authHeader.split(" ")[1];
+
+      try {
+        await userController.verifyToken(token ?? "");
+      } catch {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      }
+
+      const deletedVariant= await serviceController.deleteVariant(variantId,serviceId);
+
+      res.status(200).json({
+        message: "Variant deleted successfully",
+        variant: deletedVariant,
       });
     } catch (err: any) {
       res.status(500).json({ message: err.message });
