@@ -113,6 +113,56 @@ export class ServiceController {
     }
   }
 
+  async getActiveServices(): Promise<IService[]> {
+    try {
+      const RetrievedServices = this.storageRepo.getAllActiveServices();
+
+      if (!RetrievedServices) {
+        throw Error("No Services Found");
+      }
+
+      return RetrievedServices;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteService(id: number): Promise<void> {
+    try {
+      const deletedService = this.storageRepo.deleteService(id);
+
+      return deletedService;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteVariant(id: number, serviceId: number): Promise<void> {
+    try {
+      // 1. get service
+      const service = await this.storageRepo.getServiceById(serviceId);
+
+      if (!service) {
+        throw new Error("Service not found");
+      }
+
+      // 2. delete variant
+      await this.storageRepo.deleteVariant(id);
+
+      // 3. remove variant from service array
+      service.variants = (service.variants ?? []).filter(
+        (variantId: number) => variantId !== id,
+      );
+
+      // 4. save updated service
+      await this.storageRepo.updateService(serviceId, {
+        variants: service.variants,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getAllVariantsByServiceId(serviceId: number): Promise<IVariant[]> {
     try {
       const RetrievedVariants =

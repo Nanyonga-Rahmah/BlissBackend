@@ -50,15 +50,15 @@ export interface IAvailableDay {
   isBooked?: boolean;
 }
 
-export interface IPayment{
-  id?:string;
-  paymentMethod:string,
-  paymentIntentId:string,
-  status:string,
-  amount:number,
-  city:string,
-  customerName:string,
-  createdAt:Date
+export interface IPayment {
+  id?: string;
+  paymentMethod: string;
+  paymentIntentId: string;
+  status: string;
+  amount: number;
+  city: string;
+  customerName: string;
+  createdAt: Date;
 }
 
 export interface ICity {
@@ -120,16 +120,19 @@ export interface IStorageRepo {
   destroy(): Promise<void>;
 
   storeUser(user: IUser): Promise<IUser>;
-    storePayment(payment: IPayment): Promise<IPayment>;
+  storePayment(payment: IPayment): Promise<IPayment>;
   getAllPayments(): Promise<IPayment[]>;
 
   storeAvailableDay(day: IAvailableDay): Promise<IAvailableDay>;
   getAvailableDays(): Promise<IAvailableDay[]>;
   getDayByDate(day: string): Promise<IAvailableDay>;
-  updateAvailableDay(id: number, updates: Partial<IAvailableDay>): Promise<IAvailableDay>;
+  updateAvailableDay(
+    id: number,
+    updates: Partial<IAvailableDay>,
+  ): Promise<IAvailableDay>;
   getUserByEmail(user_email: string): Promise<IUser>;
   getUserById(id: number): Promise<IUser>;
-  updateUser(id:number,updates:Partial<IUser>): Promise<IUser>;
+  updateUser(id: number, updates: Partial<IUser>): Promise<IUser>;
   getAllUsers(): Promise<IUser[]>;
   storeLink(link: ILink): Promise<ILink>;
   getLinkByEmail(user_email: string): Promise<ILink>;
@@ -140,17 +143,22 @@ export interface IStorageRepo {
   storeBooking(booking: IBooking): Promise<IBooking>;
   getBookingById(id: number): Promise<IBooking>;
   getAllBookings(): Promise<IBooking[]>;
+  getAllBookings(): Promise<IBooking[]>;
+
   getUserBookings(userId: number): Promise<IBooking[]>;
   getDayById(id: number): Promise<IAvailableDay>;
   storeVariant(variant: IVariant): Promise<IVariant>;
   updateBooking(id: number, updates: Partial<IBooking>): Promise<IBooking>;
   getAllServices(): Promise<IService[]>;
+  getAllActiveServices(): Promise<IService[]>;
+
   getServiceById(id: number): Promise<IService>;
   getVariantsByServiceId(serviceId: number): Promise<IVariant[]>;
   getAllCities(): Promise<ICity[]>;
   getCityById(id: number): Promise<ICity>;
   updateCity(id: number, updates: Partial<ICity>): Promise<ICity>;
   updateService(id: number, updates: Partial<IService>): Promise<IService>;
-    updateVariant(id: number, updates: Partial<IVariant>): Promise<IVariant>;
-
+  updateVariant(id: number, updates: Partial<IVariant>): Promise<IVariant>;
+  deleteService(id: number): Promise<void>;
+  deleteVariant(id:number):Promise<void>;
 }

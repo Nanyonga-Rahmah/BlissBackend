@@ -162,6 +162,25 @@ export class PostgresStorageRepo implements IStorageRepo {
     return await serviceRepo.find({});
   }
 
+  async getAllActiveServices(): Promise<IService[]> {
+    const serviceRepo = this.dataSource.getRepository<IService>(Service);
+    return await serviceRepo.find({
+      where: { status: "active" },
+    });
+  }
+
+  async deleteService(id: number): Promise<void> {
+    const serviceRepo = this.dataSource.getRepository<IService>(Service);
+
+    await serviceRepo.delete(id);
+  }
+
+
+  async deleteVariant(id: number): Promise<void> {
+    const variantRepo = this.dataSource.getRepository<IVariant>(Variant);
+
+    await variantRepo.delete(id);
+  }
   async getCityById(id: number): Promise<ICity> {
     const cityRepo = this.dataSource.getRepository<ICity>(City);
     const city = await cityRepo.findOne({
@@ -384,7 +403,6 @@ export class PostgresStorageRepo implements IStorageRepo {
       where: { userType: "user" },
     });
   }
-
 
   async getAllPayments(): Promise<IPayment[]> {
     const paymentRepo = this.dataSource.getRepository<IPayment>(Payment);
