@@ -73,7 +73,7 @@ export const AvailabilityEmail = ({ name, day, timeSlots }: Props) => {
 
           {/* Availability Info */}
           <Text style={{ marginTop: "16px", fontSize: "14px" }}>
-            <strong>Available Day:</strong> {day}
+            <strong>Available Day:</strong> {new Date(day).toDateString()}{" "}
           </Text>
 
           <Text style={{ fontSize: "14px" }}>
