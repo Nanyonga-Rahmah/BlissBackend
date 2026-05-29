@@ -82,6 +82,10 @@ export interface IService {
   image: string;
   status: string;
   description: string;
+  hasRemovalAddOn?:boolean;
+  removalDetailsSize?:string;
+  removalDetailsLength?:string;
+  removalDetailsPrice?:number;
   variants?: number[];
 }
 
@@ -153,6 +157,8 @@ export interface IStorageRepo {
   getAllActiveServices(): Promise<IService[]>;
 
   getServiceById(id: number): Promise<IService>;
+    getParticularService(): Promise<IService[]>;
+
   getVariantsByServiceId(serviceId: number): Promise<IVariant[]>;
   getAllCities(): Promise<ICity[]>;
   getCityById(id: number): Promise<ICity>;
