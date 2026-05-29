@@ -209,7 +209,7 @@ export class PostgresStorageRepo implements IStorageRepo {
     const serviceRepo = this.dataSource.getRepository<IService>(Service);
     const services = await serviceRepo.find({
       where: {
-        name: ILike("%hair removal%"),
+        name: ILike("%removal%"),
       },
     });
 
