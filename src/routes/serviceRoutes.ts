@@ -35,7 +35,7 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
           .json({ message: "Token verification failed", error });
       }
 
-      const { name, description, status, variants } = req.body;
+      const { name, description, status, variants,hasRemovalAddOn,removalDetailsLength,removalDetailsSize,removalDetailsPrice } = req.body;
       if (!name || !description || !status || !req.file) {
         return res.status(400).json({ message: "All fields are required" });
       }
@@ -48,6 +48,11 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
         status,
         image: imageUrl ?? "",
         variants: variants ? JSON.parse(variants) : [],
+        hasRemovalAddOn,
+        removalDetailsLength,
+        removalDetailsPrice,
+        removalDetailsSize
+
       };
 
       const newService = await serviceController.createService(service);
@@ -101,25 +106,6 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
   // --- getAllCities ---
   router.get("/services", async (req, res) => {
     try {
-      // const authHeader = req.headers.authorization;
-
-      // if (!authHeader) {
-      //   return res
-      //     .status(401)
-      //     .json({ message: "Authorization token is missing" });
-      // }
-
-      // const token = authHeader.split(" ")[1];
-
-      // let tokenVerificationResult;
-      // try {
-      //   tokenVerificationResult = await userController.verifyToken(token ?? "");
-      // } catch (error) {
-      //   return res
-      //     .status(401)
-      //     .json({ message: "Token verification failed", error });
-      // }
-
       const allServices = await serviceController.getAllServices();
 
       res.status(200).json({
@@ -271,7 +257,6 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
     }
   });
 
-
   router.delete("/variants/:serviceId/:id", async (req, res) => {
     try {
       const variantId = Number(req.params.id);
@@ -294,7 +279,10 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
         return res.status(401).json({ message: "Invalid or expired token" });
       }
 
-      const deletedVariant= await serviceController.deleteVariant(variantId,serviceId);
+      const deletedVariant = await serviceController.deleteVariant(
+        variantId,
+        serviceId,
+      );
 
       res.status(200).json({
         message: "Variant deleted successfully",
@@ -315,6 +303,19 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
 
       const retrievedService =
         await serviceController.getServiceById(serviceId);
+
+      res.status(200).json({
+        message: "service retrieved successfully",
+        service: retrievedService,
+      });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  router.get("/getRemovalServices", async (req, res) => {
+    try {
+      const retrievedService = await serviceController.getRemovalService();
 
       res.status(200).json({
         message: "service retrieved successfully",

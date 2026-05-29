@@ -36,6 +36,10 @@ export class ServiceController {
         image: service.image,
         status: service.status,
         variants: service.variants as number[],
+        hasRemovalAddOn:service.hasRemovalAddOn || false,
+        removalDetailsLength:service.removalDetailsLength || "",
+        removalDetailsSize:service.removalDetailsSize || "",
+        removalDetailsPrice:service.removalDetailsPrice || 0
       };
 
       const createdService =
@@ -99,6 +103,20 @@ export class ServiceController {
     }
   }
 
+
+  async getRemovalService(): Promise<IService[]> {
+    try {
+      const RetrievedService = this.storageRepo.getParticularService();
+
+      if (!RetrievedService) {
+        throw Error("No Service Found");
+      }
+
+      return RetrievedService;
+    } catch (error) {
+      throw error;
+    }
+  }
   async getAllServices(): Promise<IService[]> {
     try {
       const RetrievedServices = this.storageRepo.getAllServices();

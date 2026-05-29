@@ -209,6 +209,18 @@ export class Service implements IService {
   @Column()
   status: string;
 
+  @Column({nullable:true})
+  hasRemovalAddOn?: boolean;
+
+  @Column({nullable:true})
+  removalDetailsLength?: string;
+
+  @Column({nullable:true})
+  removalDetailsPrice?: number;
+
+  @Column({nullable:true})
+  removalDetailsSize?: string;
+
   @Column("simple-json", { nullable: true })
   variants: number[];
 
@@ -219,11 +231,20 @@ export class Service implements IService {
     description: string,
     status: string,
     variants: number[],
+
+    hasRemovalAddOn: boolean,
+    removalDetailsSize?: string,
+    removalDetailsLength?: string,
+    removalDetailsPrice?: number,
   ) {
     ((this.id = id),
       (this.name = name),
       (this.image = image),
       (this.description = description),
+      (hasRemovalAddOn = hasRemovalAddOn),
+      (removalDetailsLength = removalDetailsLength),
+      (removalDetailsPrice = removalDetailsPrice),
+      (removalDetailsSize = removalDetailsSize),
       (this.variants = variants),
       (this.status = status));
   }

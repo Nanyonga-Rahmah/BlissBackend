@@ -1,4 +1,4 @@
-import { DataSource } from "typeorm";
+import { DataSource, ILike } from "typeorm";
 import {
   AvailableDay,
   Booking,
@@ -175,7 +175,6 @@ export class PostgresStorageRepo implements IStorageRepo {
     await serviceRepo.delete(id);
   }
 
-
   async deleteVariant(id: number): Promise<void> {
     const variantRepo = this.dataSource.getRepository<IVariant>(Variant);
 
@@ -204,6 +203,20 @@ export class PostgresStorageRepo implements IStorageRepo {
       throw error("Service doesn't exist");
     }
     return service;
+  }
+
+  async getParticularService(): Promise<IService[]> {
+    const serviceRepo = this.dataSource.getRepository<IService>(Service);
+    const services = await serviceRepo.find({
+      where: {
+        name: ILike("%hair removal%"),
+      },
+    });
+
+    if (!services) {
+      throw error("Service doesn't exist");
+    }
+    return services;
   }
 
   async getVariantsByServiceId(serviceId: number): Promise<IVariant[]> {
