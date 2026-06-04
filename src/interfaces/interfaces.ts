@@ -37,6 +37,10 @@ export interface IBooking {
   amount: string;
   travelfee?: string;
   servicefee?: string;
+  hasRemovalAddOn?:boolean;
+  removalDetailsSize?:string;
+  removalDetailsLength?:string;
+  removalDetailsPrice?:number;
   createdAt: Date;
 }
 
@@ -79,14 +83,14 @@ export interface IVariant {
 export interface IService {
   id?: number;
   name: string;
-  image: string;
+    image?: string; 
+
+  images: string[];
   status: string;
   description: string;
-  hasRemovalAddOn?:boolean;
-  removalDetailsSize?:string;
-  removalDetailsLength?:string;
-  removalDetailsPrice?:number;
+  
   variants?: number[];
+  createdAt: Date;
 }
 
 export type TLogMethod = (message: string | Error, meta?: unknown) => void;

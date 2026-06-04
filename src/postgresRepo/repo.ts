@@ -159,13 +159,20 @@ export class PostgresStorageRepo implements IStorageRepo {
 
   async getAllServices(): Promise<IService[]> {
     const serviceRepo = this.dataSource.getRepository<IService>(Service);
-    return await serviceRepo.find({});
+    return await serviceRepo.find({
+      order: {
+        createdAt: "DESC",
+      },
+    });
   }
 
   async getAllActiveServices(): Promise<IService[]> {
     const serviceRepo = this.dataSource.getRepository<IService>(Service);
     return await serviceRepo.find({
       where: { status: "active" },
+      order: {
+        createdAt: "DESC",
+      },
     });
   }
 

@@ -111,6 +111,18 @@ export class Booking implements IBooking {
   amount: string;
 
   @Column({ nullable: true })
+  hasRemovalAddOn?: boolean;
+
+  @Column({ nullable: true })
+  removalDetailsLength?: string;
+
+  @Column({ nullable: true })
+  removalDetailsPrice?: number;
+
+  @Column({ nullable: true })
+  removalDetailsSize?: string;
+
+  @Column({ nullable: true })
   cancelationReason?: string;
 
   @Column({ nullable: true })
@@ -134,6 +146,11 @@ export class Booking implements IBooking {
     length: string,
     city: string,
     amount: string,
+
+    hasRemovalAddOn: boolean,
+    removalDetailsSize: string,
+    removalDetailsLength: string,
+    removalDetailsPrice: number,
   ) {
     ((this.id = id),
       (this.serviceName = serviceName),
@@ -146,6 +163,10 @@ export class Booking implements IBooking {
       (this.userId = userId),
       (this.travelfee = travelfee),
       (this.serviceFee = servicefee),
+      (this.hasRemovalAddOn = hasRemovalAddOn),
+      (this.removalDetailsLength = removalDetailsLength),
+      (this.removalDetailsPrice = removalDetailsPrice),
+      (this.removalDetailsSize = removalDetailsSize),
       (this.size = size),
       (this.length = length),
       (this.status = status));
@@ -200,8 +221,11 @@ export class Service implements IService {
   @Column()
   name: string;
 
-  @Column()
-  image: string;
+  @Column({nullable:true})
+  image?: string;
+
+  @Column("simple-json", { nullable: true })
+  images: string[];
 
   @Column()
   description: string;
@@ -209,43 +233,29 @@ export class Service implements IService {
   @Column()
   status: string;
 
-  @Column({nullable:true})
-  hasRemovalAddOn?: boolean;
-
-  @Column({nullable:true})
-  removalDetailsLength?: string;
-
-  @Column({nullable:true})
-  removalDetailsPrice?: number;
-
-  @Column({nullable:true})
-  removalDetailsSize?: string;
-
   @Column("simple-json", { nullable: true })
   variants: number[];
+
+  @Column({ nullable: true })
+  createdAt: Date;
 
   constructor(
     id: number,
     name: string,
-    image: string,
+    image:string,
+    images: string[],
     description: string,
     status: string,
     variants: number[],
-
-    hasRemovalAddOn: boolean,
-    removalDetailsSize?: string,
-    removalDetailsLength?: string,
-    removalDetailsPrice?: number,
+    createdAt: Date,
   ) {
     ((this.id = id),
       (this.name = name),
-      (this.image = image),
+      this.image=image,
+      (this.images = images),
       (this.description = description),
-      (hasRemovalAddOn = hasRemovalAddOn),
-      (removalDetailsLength = removalDetailsLength),
-      (removalDetailsPrice = removalDetailsPrice),
-      (removalDetailsSize = removalDetailsSize),
       (this.variants = variants),
+      (this.createdAt = createdAt),
       (this.status = status));
   }
 }

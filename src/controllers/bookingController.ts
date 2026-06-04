@@ -45,6 +45,11 @@ export class BookingController {
         travelfee: booking?.travelfee ?? "",
         servicefee: booking?.servicefee ?? "",
         size: booking?.size ?? "",
+
+        hasRemovalAddOn: booking.hasRemovalAddOn || false,
+        removalDetailsLength: booking.removalDetailsLength || "",
+        removalDetailsSize: booking.removalDetailsSize || "",
+        removalDetailsPrice: booking.removalDetailsPrice || 0,
       };
 
       const createdBooking = await this.storageRepo.storeBooking(bookingToSave);
@@ -57,7 +62,7 @@ export class BookingController {
       if (dayRecord) {
         await this.storageRepo.updateAvailableDay(dayRecord.id ?? 0, {
           isBooked: true,
-          status:"not available"
+          status: "not available",
         });
       }
 
@@ -127,10 +132,8 @@ export class BookingController {
       return RetrievedBookings;
     } catch (error) {
       throw error;
-    } 
-      }
-
-  
+    }
+  }
 
   async getUserBookings(userId: number): Promise<IBooking[]> {
     try {
@@ -146,8 +149,10 @@ export class BookingController {
     }
   }
 
-
-  async CancelBooking(id: number, cancelationReason: string): Promise<IBooking> {
+  async CancelBooking(
+    id: number,
+    cancelationReason: string,
+  ): Promise<IBooking> {
     try {
       const bookingToUpdate = await this.storageRepo.getBookingById(id);
 
@@ -166,7 +171,8 @@ export class BookingController {
 
   async getAllVariantsByServiceId(serviceId: number): Promise<IVariant[]> {
     try {
-      const RetrievedVariants = this.storageRepo.getVariantsByServiceId(serviceId);
+      const RetrievedVariants =
+        this.storageRepo.getVariantsByServiceId(serviceId);
 
       if (!RetrievedVariants) {
         throw Error("No Variants Found");

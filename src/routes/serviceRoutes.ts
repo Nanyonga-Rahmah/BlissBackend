@@ -13,58 +13,74 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
   const serviceController = new ServiceController(repo);
 
   // --- createCity ---
-
-  router.post("/createService", upload.single("image"), async (req, res) => {
-    try {
-      const authHeader = req.headers.authorization;
-
-      if (!authHeader) {
-        return res
-          .status(401)
-          .json({ message: "Authorization token is missing" });
-      }
-
-      const token = authHeader.split(" ")[1];
-
-      let tokenVerificationResult;
+  router.post(
+    "/createService",
+    upload.array("images", 10),
+    async (req, res) => {
       try {
-        tokenVerificationResult = await userController.verifyToken(token ?? "");
-      } catch (error) {
-        return res
-          .status(401)
-          .json({ message: "Token verification failed", error });
+        const today = new Date();
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+          return res
+            .status(401)
+            .json({ message: "Authorization token is missing" });
+        }
+
+        const token = authHeader.split(" ")[1];
+
+        try {
+          await userController.verifyToken(token ?? "");
+        } catch (error) {
+          return res
+            .status(401)
+            .json({ message: "Token verification failed", error });
+        }
+
+        const {
+          name,
+          description,
+          status,
+          variants,
+         
+        } = req.body;
+
+        const files = req.files as Express.Multer.File[];
+
+        if (!name || !description || !status || !files || files.length === 0) {
+          return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const imageUrls = [];
+
+        for (const file of files) {
+          const imageUrl = await uploadImageToDropbox(file);
+          imageUrls.push(imageUrl);
+        }
+
+
+        const service: IService = {
+          name,
+          description,
+          status,
+
+          images: imageUrls,
+
+          createdAt: today,
+          variants: variants ? JSON.parse(variants) : [],
+        };
+
+        const newService = await serviceController.createService(service);
+
+        res.status(201).json({
+          message: "Service created successfully",
+          service: newService,
+        });
+      } catch (err: any) {
+        res.status(500).json({ message: err.message });
       }
-
-      const { name, description, status, variants,hasRemovalAddOn,removalDetailsLength,removalDetailsSize,removalDetailsPrice } = req.body;
-      if (!name || !description || !status || !req.file) {
-        return res.status(400).json({ message: "All fields are required" });
-      }
-
-      const imageUrl = await uploadImageToDropbox(req.file);
-
-      const service: IService = {
-        name,
-        description,
-        status,
-        image: imageUrl ?? "",
-        variants: variants ? JSON.parse(variants) : [],
-        hasRemovalAddOn,
-        removalDetailsLength,
-        removalDetailsPrice,
-        removalDetailsSize
-
-      };
-
-      const newService = await serviceController.createService(service);
-
-      res.status(201).json({
-        message: "Service created successfully",
-        service: newService,
-      });
-    } catch (err: any) {
-      res.status(500).json({ message: err.message });
-    }
-  });
+    },
+  );
 
   router.post("/createVariant", async (req, res) => {
     try {
@@ -129,61 +145,68 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
       res.status(500).json({ message: "failure" });
     }
   });
-  router.patch("/services/:id", upload.single("image"), async (req, res) => {
-    try {
-      const serviceId = Number(req.params.id);
-
-      if (isNaN(serviceId)) {
-        return res.status(400).json({ message: "Invalid service id" });
-      }
-
-      const authHeader = req.headers.authorization;
-      if (!authHeader) {
-        return res.status(401).json({ message: "Authorization token missing" });
-      }
-
-      const token = authHeader.split(" ")[1];
-
+  router.patch(
+    "/services/:id",
+    upload.array("images", 10),
+    async (req, res) => {
       try {
-        await userController.verifyToken(token ?? "");
-      } catch {
-        return res.status(401).json({ message: "Invalid or expired token" });
+        const serviceId = Number(req.params.id);
+
+        if (isNaN(serviceId)) {
+          return res.status(400).json({ message: "Invalid service id" });
+        }
+
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+          return res
+            .status(401)
+            .json({ message: "Authorization token missing" });
+        }
+
+        const token = authHeader.split(" ")[1];
+
+        try {
+          await userController.verifyToken(token ?? "");
+        } catch {
+          return res.status(401).json({ message: "Invalid or expired token" });
+        }
+
+        const updates: Partial<IService> = {
+          name: req.body.name,
+          description: req.body.description,
+          status: req.body.status,
+        };
+
+        // Remove all existing images
+        if (req.body.removeImages === "true") {
+          updates.images = [];
+        }
+
+        const files = req.files as Express.Multer.File[];
+
+        if (files && files.length > 0) {
+          const uploadedUrls = await Promise.all(
+            files.map((file) => uploadImageToDropbox(file)),
+          );
+
+          updates.images = uploadedUrls.filter(Boolean) as string[];
+        }
+
+        const updatedService = await serviceController.updateService(
+          serviceId,
+          updates,
+        );
+
+        res.status(200).json({
+          message: "Service updated successfully",
+          service: updatedService,
+        });
+      } catch (err: any) {
+        res.status(500).json({ message: err.message });
       }
-
-      const updates: Partial<IService> = {
-        name: req.body.name,
-        description: req.body.description,
-        status: req.body.status,
-      };
-
-      if (req.body.removeImage === "true") {
-        updates.image = "";
-      }
-
-      const file = req.file;
-      if (file) {
-        const imageUrl = await uploadImageToDropbox(file);
-        updates.image = imageUrl;
-      }
-
-      if (Object.keys(updates).length === 0) {
-        return res.status(400).json({ message: "No update data provided" });
-      }
-
-      const updatedService = await serviceController.updateService(
-        serviceId,
-        updates,
-      );
-
-      res.status(200).json({
-        message: "Service updated successfully",
-        service: updatedService,
-      });
-    } catch (err: any) {
-      res.status(500).json({ message: err.message });
-    }
-  });
-
+    },
+  );
   router.patch("/services/variants/:id", async (req, res) => {
     try {
       const variantId = Number(req.params.id);
