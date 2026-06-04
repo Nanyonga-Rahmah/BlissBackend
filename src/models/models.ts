@@ -221,10 +221,10 @@ export class Service implements IService {
   @Column()
   name: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   image?: string;
 
-  @Column("simple-json", { nullable: true })
+  @Column("text", { array: true, nullable: true, default: [] })
   images: string[];
 
   @Column()
@@ -242,7 +242,7 @@ export class Service implements IService {
   constructor(
     id: number,
     name: string,
-    image:string,
+    image: string,
     images: string[],
     description: string,
     status: string,
@@ -251,7 +251,7 @@ export class Service implements IService {
   ) {
     ((this.id = id),
       (this.name = name),
-      this.image=image,
+      (this.image = image),
       (this.images = images),
       (this.description = description),
       (this.variants = variants),
