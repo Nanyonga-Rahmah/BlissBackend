@@ -14,7 +14,12 @@ async function migrateServiceImages() {
 
     await storage.dataSource.query(`
       ALTER TABLE service
-      ADD COLUMN IF NOT EXISTS images text[] NOT NULL DEFAULT '{}'
+      DROP COLUMN IF EXISTS images
+    `);
+
+    await storage.dataSource.query(`
+      ALTER TABLE service
+      ADD COLUMN images text[] NOT NULL DEFAULT '{}'
     `);
 
     await storage.dataSource.query(`
@@ -22,7 +27,6 @@ async function migrateServiceImages() {
       SET images = ARRAY[image]
       WHERE image IS NOT NULL
         AND image != ''
-        AND cardinality(images) = 0
     `);
 
     console.log("Service image migration completed successfully.");
