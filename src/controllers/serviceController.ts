@@ -29,17 +29,15 @@ export class ServiceController {
   ) {}
 
   async createService(service: IService): Promise<IService> {
+    
     try {
       const serviceToCreate: IService = {
         name: service.name,
         description: service.description,
-        image: service.image,
+        images: service.images,
         status: service.status,
+        createdAt:service.createdAt,
         variants: service.variants as number[],
-        hasRemovalAddOn:service.hasRemovalAddOn || false,
-        removalDetailsLength:service.removalDetailsLength || "",
-        removalDetailsSize:service.removalDetailsSize || "",
-        removalDetailsPrice:service.removalDetailsPrice || 0
       };
 
       const createdService =

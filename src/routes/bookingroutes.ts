@@ -49,6 +49,10 @@ export default function bookingroutes(repo: PostgresStorageRepo) {
         size,
         length,
         city,
+        hasRemovalAddOn,
+        removalDetailsLength,
+        removalDetailsSize,
+        removalDetailsPrice,
       } = req.body;
       if (!serviceName || !bookingDay || !userId) {
         return res.status(400).json({ message: "All fields are required" });
@@ -65,6 +69,10 @@ export default function bookingroutes(repo: PostgresStorageRepo) {
         travelfee: travelfee,
         servicefee: servicefee,
         city: city,
+        hasRemovalAddOn,
+        removalDetailsLength,
+        removalDetailsPrice,
+        removalDetailsSize,
         size: size ?? "",
         length: length ?? "",
         createdAt: new Date(),
@@ -188,7 +196,7 @@ export default function bookingroutes(repo: PostgresStorageRepo) {
     } catch (err: any) {
       res.status(500).json({ message: err.message });
     }
-  });   
+  });
 
   router.put("/cancel-booking/:id", async (req, res) => {
     const bookingId = Number(req.params.id);
@@ -201,7 +209,7 @@ export default function bookingroutes(repo: PostgresStorageRepo) {
     try {
       const canceledBooking = await bookingController.CancelBooking(
         bookingId,
-        cancelationReason
+        cancelationReason,
       );
 
       res.status(200).json({
@@ -212,7 +220,6 @@ export default function bookingroutes(repo: PostgresStorageRepo) {
       res.status(500).json({ message: err.message });
     }
   });
-
 
   return router;
 }
