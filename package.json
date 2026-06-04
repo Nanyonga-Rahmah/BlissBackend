@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "migrate:service-images": "node dist/scripts/migrateServiceImages.js"
+    "migrate:service-images": "node dist/scripts/migrateServiceImage.js"
   },
   "type": "commonjs",
   "author": "",
