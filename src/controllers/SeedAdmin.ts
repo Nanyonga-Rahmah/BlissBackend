@@ -12,7 +12,6 @@ type AdminSeed = {
 
 export const seedAdmins = async (dataSource: DataSource) => {
   const raw = process.env.ADMIN_USERS;
-  console.log(raw)
   const currentDate = new Date();
 
   if (!raw) {

@@ -37,10 +37,10 @@ export interface IBooking {
   amount: string;
   travelfee?: string;
   servicefee?: string;
-  hasRemovalAddOn?:boolean;
-  removalDetailsSize?:string;
-  removalDetailsLength?:string;
-  removalDetailsPrice?:number;
+  hasRemovalAddOn?: boolean;
+  removalDetailsSize?: string;
+  removalDetailsLength?: string;
+  removalDetailsPrice?: number;
   createdAt: Date;
 }
 
@@ -83,12 +83,12 @@ export interface IVariant {
 export interface IService {
   id?: number;
   name: string;
-    image?: string; 
+  image?: string;
 
   images: string[];
   status: string;
   description: string;
-  
+
   variants?: number[];
   createdAt: Date;
 }
@@ -161,7 +161,7 @@ export interface IStorageRepo {
   getAllActiveServices(): Promise<IService[]>;
 
   getServiceById(id: number): Promise<IService>;
-    getParticularService(): Promise<IService[]>;
+  getParticularService(): Promise<IService[]>;
 
   getVariantsByServiceId(serviceId: number): Promise<IVariant[]>;
   getAllCities(): Promise<ICity[]>;
@@ -170,5 +170,5 @@ export interface IStorageRepo {
   updateService(id: number, updates: Partial<IService>): Promise<IService>;
   updateVariant(id: number, updates: Partial<IVariant>): Promise<IVariant>;
   deleteService(id: number): Promise<void>;
-  deleteVariant(id:number):Promise<void>;
+  deleteVariant(id: number): Promise<void>;
 }
