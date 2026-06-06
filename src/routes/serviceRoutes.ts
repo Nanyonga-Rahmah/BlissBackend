@@ -145,68 +145,69 @@ export default function serviceRoutes(repo: PostgresStorageRepo) {
       res.status(500).json({ message: "failure" });
     }
   });
-  router.patch(
-    "/services/:id",
-    upload.array("images", 10),
-    async (req, res) => {
-      try {
-        const serviceId = Number(req.params.id);
+ router.patch(
+  "/services/:id",
+  upload.array("images", 10),
+  async (req, res) => {
+    try {
+      const serviceId = Number(req.params.id);
 
-        if (isNaN(serviceId)) {
-          return res.status(400).json({ message: "Invalid service id" });
-        }
-
-        const authHeader = req.headers.authorization;
-
-        if (!authHeader) {
-          return res
-            .status(401)
-            .json({ message: "Authorization token missing" });
-        }
-
-        const token = authHeader.split(" ")[1];
-
-        try {
-          await userController.verifyToken(token ?? "");
-        } catch {
-          return res.status(401).json({ message: "Invalid or expired token" });
-        }
-
-        const updates: Partial<IService> = {
-          name: req.body.name,
-          description: req.body.description,
-          status: req.body.status,
-        };
-
-        // Remove all existing images
-        if (req.body.removeImages === "true") {
-          updates.images = [];
-        }
-
-        const files = req.files as Express.Multer.File[];
-
-        if (files && files.length > 0) {
-          const uploadedUrls = await Promise.all(
-            files.map((file) => uploadImageToDropbox(file)),
-          );
-
-          updates.images = uploadedUrls.filter(Boolean) as string[];
-        }
-
-        const updatedService = await serviceController.updateService(
-          serviceId,
-          updates,
-        );
-
-        res.status(200).json({
-          message: "Service updated successfully",
-          service: updatedService,
-        });
-      } catch (err: any) {
-        res.status(500).json({ message: err.message });
+      if (isNaN(serviceId)) {
+        return res.status(400).json({ message: "Invalid service id" });
       }
-    },
-  );
+
+      const authHeader = req.headers.authorization;
+
+      if (!authHeader) {
+        return res.status(401).json({ message: "Authorization token missing" });
+      }
+
+      const token = authHeader.split(" ")[1];
+
+      try {
+        await userController.verifyToken(token ?? "");
+      } catch {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      }
+
+      const updates: Partial<IService> = {
+        name: req.body.name,
+        description: req.body.description,
+        status: req.body.status,
+      };
+
+      const keptImages = JSON.parse(req.body.keptImages || "[]") as string[];
+
+      const files = req.files as Express.Multer.File[];
+
+      console.log(files)
+
+      let uploadedUrls: string[] = [];
+
+      if (files && files.length > 0) {
+        uploadedUrls = (
+          await Promise.all(files.map((file) => uploadImageToDropbox(file)))
+        ).filter(Boolean) as string[];
+      }
+
+      updates.images = [...keptImages, ...uploadedUrls];
+
+      console.log(updates.images)
+
+      const updatedService = await serviceController.updateService(
+        serviceId,
+        updates,
+      );
+
+      res.status(200).json({
+        message: "Service updated successfully",
+        service: updatedService,
+      });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  },
+);
   router.patch("/services/variants/:id", async (req, res) => {
     try {
       const variantId = Number(req.params.id);

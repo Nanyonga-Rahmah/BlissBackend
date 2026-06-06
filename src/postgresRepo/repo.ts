@@ -36,7 +36,7 @@ export class PostgresStorageRepo implements IStorageRepo {
       username: db.db_username,
       password: db.db_password,
       database: db.db_database,
-      entities: [User, Booking, Link, City, AvailableDay, Service, Variant],
+      entities: [User, Booking, Link, City, AvailableDay, Service, Variant,Payment],
       synchronize: true,
     });
   }
@@ -424,6 +424,14 @@ export class PostgresStorageRepo implements IStorageRepo {
     });
   }
 
+
+  async getAllAdmins(): Promise<IUser[]> {
+    const UserRepo = this.dataSource.getRepository<IUser>(User);
+    return await UserRepo.find({
+      order: { createdAt: "desc" },
+      where: { userType: "admin" },
+    });
+  }
   async getAllPayments(): Promise<IPayment[]> {
     const paymentRepo = this.dataSource.getRepository<IPayment>(Payment);
     return await paymentRepo.find({

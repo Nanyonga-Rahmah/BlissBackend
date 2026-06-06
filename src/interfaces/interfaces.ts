@@ -142,6 +142,9 @@ export interface IStorageRepo {
   getUserById(id: number): Promise<IUser>;
   updateUser(id: number, updates: Partial<IUser>): Promise<IUser>;
   getAllUsers(): Promise<IUser[]>;
+
+    getAllAdmins(): Promise<IUser[]>;
+
   storeLink(link: ILink): Promise<ILink>;
   getLinkByEmail(user_email: string): Promise<ILink>;
   getLinkById(id: number): Promise<ILink>;

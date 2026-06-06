@@ -6,6 +6,7 @@ import {
   OneToMany,
   JoinColumn,
   Timestamp,
+  PrimaryColumn,
 } from "typeorm";
 import type {
   IAvailableDay,
@@ -262,7 +263,7 @@ export class Service implements IService {
 
 @Entity()
 export class Payment implements IPayment {
-  @Column()
+  @PrimaryColumn()
   id?: string;
 
   @Column()
