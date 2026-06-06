@@ -7,13 +7,13 @@ export default function paymentRoutes(repo: PostgresStorageRepo) {
 
   // CHARGE PAYMENT
   router.post("/payments/charge", async (req, res) => {
-    const { amount, customerName, city } = req.body;
+    const { amount, customerName, city,paymentMethodId } = req.body;
 
     try {
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount * 100,
         currency: "sek",
-        payment_method: "card",
+        payment_method: paymentMethodId,
         confirm: true,
         automatic_payment_methods: {
           enabled: true,
@@ -21,7 +21,6 @@ export default function paymentRoutes(repo: PostgresStorageRepo) {
         },
       });
 
-      // generate custom id like TXN-2026-001
       const year = new Date().getFullYear();
 
       const storedPayments = await repo.getAllPayments();

@@ -19,6 +19,7 @@ import VerifyEmail from "../views/user_verification";
 
 import { Resend } from "resend";
 import { error } from "console";
+import { AdminBookingEmail } from "../views/booking";
 const secret = databaseConfig.secretStore;
 
 const resend = new Resend(secret.resend_api);
@@ -54,6 +55,10 @@ export class BookingController {
 
       const createdBooking = await this.storageRepo.storeBooking(bookingToSave);
 
+      const userDetails = await this.storageRepo.getUserById(
+        createdBooking.userId,
+      );
+
       if (!createdBooking) {
         throw Error("Booking not found");
       }
@@ -69,6 +74,33 @@ export class BookingController {
       await this.storageRepo.updateUser(booking.userId, {
         bookings: [createdBooking.id ?? 0],
       });
+
+      const adminUsers = await this.storageRepo.getAllAdmins();
+
+      const from = Resend_from;
+      const subject = "New Booking Created";
+
+      await Promise.all(
+        adminUsers.map(async (user) => {
+          const html = await render(
+            React.createElement(AdminBookingEmail, {
+              adminName: `${user.firstName} ${user.lastName}`,
+              customerName: `${userDetails.firstName} ${userDetails.lastName}`,
+              day: createdBooking.bookingDay,
+              timeSlots: createdBooking.bookingTime,
+              city: createdBooking.city,
+              serviceName: createdBooking.serviceName,
+            }),
+          );
+
+          return resend.emails.send({
+            to: user.email,
+            subject,
+            html,
+            from,
+          });
+        }),
+      );
 
       return createdBooking;
     } catch (error) {
